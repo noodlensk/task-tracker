@@ -1,0 +1,69 @@
+asyncapi: 2.4.0
+info:
+  title: Tasks
+  version: 1.0.0
+  description: TODO
+channels:
+  tasks.reassign:
+    publish:
+      message:
+        $ref: '#/components/messages/tasksReAssign'
+    subscribe:
+      message:
+        $ref: '#/components/messages/tasksReAssign'
+  tasks.assigned:
+    publish:
+      message:
+        $ref: '#/components/messages/taskAssigned'
+  tasks.compleated:
+    publish:
+      message:
+        $ref: '#/components/messages/taskCompleted'
+components:
+  messages:
+    taskCompleted:
+      name: TaskCompleted
+      payload:
+        $ref: "#/components/schemas/taskPayload"
+    taskAssigned:
+      name: TaskAssigned
+      payload:
+        $ref: "#/components/schemas/taskPayload"
+    tasksReAssign:
+      name: TasksReAssign
+      payload:
+        $ref: "#/components/schemas/reassignTasks"
+  schemas:
+    taskPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        assigned_to:
+          type: string
+        created_by:
+          type: string
+        status:
+          type: string
+          enum: ["NEW", "DONE"]
+        created_at:
+          type: string
+          format: date-time
+        modified_at:
+          type: string
+          format: date-time
+        sentAt:
+          $ref: "#/components/schemas/sentAt"
+    sentAt:
+      type: string
+      format: date-time
+      description: Date and time when the message was sent.
+    reassignTasks:
+      type: object
+      properties:
+        asked_by_user:
+          type: string

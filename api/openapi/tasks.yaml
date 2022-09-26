@@ -1,0 +1,158 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Tasks
+  description: TODO
+  contact:
+    name: Dmitry Makarenko
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+security:
+  - bearerAuth: [ ]
+paths:
+  /tasks:
+    get:
+      operationId: getTasks
+      parameters:
+        - in: query
+          name: offset
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: limit
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The numbers of items to return
+      responses:
+        '200':
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tasks'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      operationId: createTask
+      requestBody:
+        description: todo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          description: created
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks/mark-as-complete:
+    put:
+      operationId: markTaskAsComplete
+      requestBody:
+        description: todo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        '204':
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks/reassign:
+    put:
+      operationId: reassignTasks
+      responses:
+        '204':
+          description: todo
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Task:
+      type: object
+      required: [ title, description ]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        assigned_to:
+          type: string
+        created_by:
+          type: string
+        status:
+          type: string
+          enum: ["NEW", "DONE"]
+        created_at:
+          type: string
+          format: date-time
+        modified_at:
+          type: string
+          format: date-time
+    Tasks:
+      type: object
+      required: [ tasks ]
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+    TaskUpdate:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: array
+          items:
+            type: string
+    Error:
+      type: object
+      required:
+        - slug
+        - message
+      properties:
+        slug:
+          type: string
+        message:
+          type: string

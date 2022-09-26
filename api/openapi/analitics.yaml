@@ -1,0 +1,72 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Analitics
+  description: TODO
+  contact:
+    name: Dmitry Makarenko
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+security:
+  - bearerAuth: [ ]
+paths:
+  /report:
+    get:
+      operationId: getReport
+      responses:
+        '200':
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Report:
+      type: object
+      required: [ earnedToday, usersWithNegativeBalance, mostExpensiveTaskToday, mostExpensiveTaskThisWeek, mostExpensiveTaskThisMonth ]
+      properties:
+        earnedToday:
+          type: integer
+          minimum: 0
+          default: 0
+        usersWithNegativeBalance:
+          type: integer
+          minimum: 0
+          default: 0
+        mostExpensiveTaskToday:
+          type: integer
+          minimum: 0
+          default: 0
+        mostExpensiveTaskThisWeek:
+          type: integer
+          minimum: 0
+          default: 0
+        mostExpensiveTaskThisMonth:
+          type: integer
+          minimum: 0
+          default: 0
+    Error:
+      type: object
+      required:
+        - slug
+        - message
+      properties:
+        slug:
+          type: string
+        message:
+          type: string

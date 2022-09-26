@@ -1,0 +1,176 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Accounting
+  description: TODO
+  contact:
+    name: Dmitry Makarenko
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+security:
+  - bearerAuth: [ ]
+paths:
+  /balance:
+    get:
+      operationId: getBalance
+      parameters:
+        - in: query
+          name: dateFrom
+          schema:
+            type: string
+            format: date
+          description: TODO
+        - in: query
+          name: dateTo
+          schema:
+            type: string
+            format: date
+          description: The numbers of items to return
+      responses:
+        '200':
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceHistory'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /balance/transactions/{date}:
+    get:
+      operationId: getBalanceHistoryForDate
+      parameters:
+        - in: path
+          name: date
+          schema:
+            type: string
+          required: true
+          description: todo
+      responses:
+        '200':
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transactions'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /balance/{user}:
+    get:
+      operationId: getBalanceForUser
+      parameters:
+        - in: path
+          name: user
+          schema:
+            type: string
+          required: true
+          description: todo
+      responses:
+        '200':
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceHistory'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /balance/{user}/transactions/{date}:
+    get:
+      operationId: getBalanceHistoryForUserAndDate
+      parameters:
+        - in: path
+          name: user
+          schema:
+            type: string
+          required: true
+          description: todo
+        - in: path
+          name: date
+          schema:
+            type: string
+          required: true
+          description: todo
+      responses:
+        '200':
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transactions'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Balance:
+      type: object
+      required: [ date, sum ]
+      properties:
+        date:
+          type: string
+          format: date
+        sum:
+          type: integer
+          minimum: 0
+          default: 0
+    BalanceHistory:
+      type: object
+      required: [ balance ]
+      properties:
+        balance:
+          type: array
+          items:
+            $ref: '#/components/schemas/Balance'
+    Transaction:
+      type: object
+      required: [user, date, value, reason]
+      properties:
+        user:
+          type: string
+        date:
+          type: string
+          format: date
+        value:
+          type: integer
+        reason:
+          type: string
+    Transactions:
+      type: object
+      required: [ transactions ]
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+    Error:
+      type: object
+      required:
+        - slug
+        - message
+      properties:
+        slug:
+          type: string
+        message:
+          type: string
