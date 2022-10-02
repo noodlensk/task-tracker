@@ -1,13 +1,15 @@
 package ports
 
 import (
+	"net/http"
+
 	"github.com/go-chi/render"
+
 	"github.com/noodlensk/task-tracker/internal/common/server/httperr"
 	"github.com/noodlensk/task-tracker/internal/users/app"
 	"github.com/noodlensk/task-tracker/internal/users/app/command"
 	"github.com/noodlensk/task-tracker/internal/users/app/query"
 	"github.com/noodlensk/task-tracker/internal/users/domain/user"
-	"net/http"
 )
 
 type HTTPServer struct {
@@ -18,6 +20,7 @@ func (h HTTPServer) AuthLogin(w http.ResponseWriter, r *http.Request) {
 	loginReq := AuthLoginRequest{}
 	if err := render.Decode(r, &loginReq); err != nil {
 		httperr.BadRequest("invalid-request", err, w, r)
+
 		return
 	}
 
@@ -25,9 +28,9 @@ func (h HTTPServer) AuthLogin(w http.ResponseWriter, r *http.Request) {
 		Email:    loginReq.Email,
 		Password: loginReq.Password,
 	})
-
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
+
 		return
 	}
 
@@ -40,10 +43,12 @@ func (h HTTPServer) CreateUser(w http.ResponseWriter, r *http.Request) {
 	userToCreate := CreateUserRequest{}
 	if err := render.Decode(r, &userToCreate); err != nil {
 		httperr.BadRequest("invalid-request", err, w, r)
+
 		return
 	}
 
-	var userRole user.UserRole
+	var userRole user.Role
+
 	switch userToCreate.Role {
 	case CreateUserRequestRoleBasic:
 		userRole = user.RoleBasic
@@ -56,11 +61,13 @@ func (h HTTPServer) CreateUser(w http.ResponseWriter, r *http.Request) {
 	u, err := user.NewUser(userToCreate.Name, userToCreate.Email, userRole, userToCreate.Password)
 	if err != nil {
 		httperr.BadRequest("invalid-request", err, w, r)
+
 		return
 	}
 
 	if err := h.app.Commands.CreateUser.Handle(r.Context(), command.CreateUser{User: *u}); err != nil {
 		httperr.RespondWithSlugError(err, w, r)
+
 		return
 	}
 }
@@ -70,7 +77,6 @@ func (h HTTPServer) GetUsers(w http.ResponseWriter, r *http.Request, params GetU
 		Limit:  params.Limit,
 		Offset: params.Offset,
 	})
-
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
 

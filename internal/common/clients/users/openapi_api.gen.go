@@ -553,7 +553,6 @@ func ParseCreateUserResponse(rsp *http.Response) (*CreateUserResponse, error) {
 			return nil, err
 		}
 		response.JSONDefault = &dest
-
 	}
 
 	return response, nil

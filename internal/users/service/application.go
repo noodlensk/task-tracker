@@ -1,27 +1,26 @@
 package service
 
 import (
-	"github.com/noodlensk/task-tracker/internal/common/tests"
 	"github.com/noodlensk/task-tracker/internal/users/adapters"
 	"github.com/noodlensk/task-tracker/internal/users/app"
 	"github.com/noodlensk/task-tracker/internal/users/app/command"
 	"github.com/noodlensk/task-tracker/internal/users/app/query"
 	"github.com/noodlensk/task-tracker/internal/users/domain/user"
-	"go.uber.org/zap"
 )
 
-func NewApplication(logger *zap.SugaredLogger) (*app.Application, error) {
+func NewApplication() (*app.Application, error) {
 	userRepo := adapters.NewUserInMemoryRepository()
 
-	return newApplication(logger, userRepo), nil
+	return newApplication(userRepo), nil
 }
 
 func NewComponentTestApplication() *app.Application {
 	userRepo := adapters.NewUserInMemoryRepository()
-	return newApplication(tests.NewLogger(), userRepo)
+
+	return newApplication(userRepo)
 }
 
-func newApplication(logger *zap.SugaredLogger, userRepo user.Repository) *app.Application {
+func newApplication(userRepo user.Repository) *app.Application {
 	return &app.Application{
 		Commands: app.Commands{
 			CreateUser: command.NewCreateUserHandler(userRepo),

@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+
 	"github.com/noodlensk/task-tracker/internal/users/domain/user"
 )
 

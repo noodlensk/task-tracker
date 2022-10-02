@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
+
 	"github.com/noodlensk/task-tracker/internal/tasks/domain/task"
 	"github.com/noodlensk/task-tracker/internal/tasks/domain/user"
-	"sync"
 )
 
 type TaskInMemoryRepository struct {

@@ -27,12 +27,14 @@ func (a JWTHttpMiddleware) Middleware(next http.Handler) http.Handler {
 		bearerToken := a.tokenFromHeader(r)
 		if bearerToken == "" {
 			httperr.Unauthorized("empty-bearer-token", nil, w, r)
+
 			return
 		}
 
 		user, err := ParseToken(a.Secret, bearerToken)
 		if err != nil {
 			httperr.Unauthorized("unable-to-verify-jwt", err, w, r)
+
 			return
 		}
 
@@ -59,11 +61,7 @@ const (
 	userContextKey ctxKey = iota
 )
 
-var (
-	// if we expect that the user of the function may be interested with concrete error,
-	// it's a good idea to provide variable with this error
-	NoUserInContextError = commonerrors.NewAuthorizationError("no user in context", "no-user-found")
-)
+var NoUserInContextError = commonerrors.NewAuthorizationError("no user in context", "no-user-found")
 
 func UserFromCtx(ctx context.Context) (User, error) {
 	u, ok := ctx.Value(userContextKey).(User)

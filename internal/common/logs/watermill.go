@@ -9,11 +9,11 @@ type watermillLogger struct {
 	logger *zap.SugaredLogger
 }
 
-func NewWatermillLogger(logger *zap.SugaredLogger) watermillLogger { //nolint:golint
+func NewWatermillLogger(logger *zap.SugaredLogger) watermillLogger { //nolint:revive
 	return watermillLogger{logger: logger}
 }
 
-func NewWatermillNopLogger() watermillLogger { //nolint:golint
+func NewWatermillNopLogger() watermillLogger { //nolint:revive
 	return NewWatermillLogger(NewNopLogger())
 }
 

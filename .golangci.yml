@@ -1,0 +1,107 @@
+run:
+  timeout: 5m
+  tests: false
+  go: '1.19'
+linters-settings:
+  gci:
+    # Section configuration to compare against.
+    # Section names are case-insensitive and may contain parameters in ().
+    # The default order of sections is `standard > default > custom > blank > dot`,
+    # If `custom-order` is `true`, it follows the order of `sections` option.
+    # Default: ["standard", "default"]
+    sections:
+      - standard # Standard section: captures all standard packages.
+      - default # Default section: contains all imports that could not be matched to another section type.
+      - prefix(github.com/noodlensk/task-tracker) # Custom section: groups all imports with the specified Prefix.
+linters:
+  enable:
+    - asciicheck
+    - bodyclose
+    - depguard
+    - dogsled
+  #  - dupl
+    - errcheck
+    - exhaustive
+    - exportloopref
+    - forbidigo
+  #  - funlen
+    - gci
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - gofumpt
+    - goheader
+    - goimports
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - importas
+    - ineffassign
+    - makezero
+    - misspell
+    - nakedret
+    - nilerr
+    - nlreturn
+    - noctx
+    - nolintlint
+    - paralleltest
+    - predeclared
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - stylecheck
+    - stylecheck
+    - testpackage
+    - thelper
+    - tparallel
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - wastedassign
+    - whitespace
+    - wsl
+    - asasalint
+    - bidichk
+    - containedctx
+    - contextcheck
+  #  - cyclop
+    - decorder
+    - durationcheck
+    - errchkjson
+    - errname
+  #  - errorlint
+    - execinquery
+  #  - exhaustruct
+    - forcetypeassert
+  #  - gochecknoglobals
+  #  - gocognit
+  #  - godot
+  #  - godox
+  #  - goerr113
+  #  - gomnd
+  #  - gomoddirectives
+    - grouper
+  #  - ireturn
+  #  - lll
+    - maintidx
+    - nestif
+    - nilnil
+  #  - nonamedreturns
+    - nosprintfhostport
+  #  - prealloc
+    - promlinter
+    - revive
+    - tagliatelle
+    - tenv
+  #  - varnamelen
+  #  - wrapcheck
+  disable-all: true
+# golangci.com configuration
+# https://github.com/golangci/golangci/wiki/Configuration
+service:
+  golangci-lint-version: 1.49 # use the fixed version to not introduce new linters unexpectedly

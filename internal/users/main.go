@@ -2,16 +2,17 @@ package main
 
 import (
 	"context"
+	"net/http"
+	"os"
+	"os/signal"
+
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
+
 	"github.com/noodlensk/task-tracker/internal/common/logs"
 	"github.com/noodlensk/task-tracker/internal/common/server"
 	"github.com/noodlensk/task-tracker/internal/users/ports"
 	"github.com/noodlensk/task-tracker/internal/users/service"
-
-	"go.uber.org/zap"
-	"net/http"
-	"os"
-	"os/signal"
 )
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 func run(logger *zap.SugaredLogger) error {
 	ctx := context.Background()
 
-	app, err := service.NewApplication(logger.With("app", "user"))
+	app, err := service.NewApplication()
 	if err != nil {
 		return err
 	}

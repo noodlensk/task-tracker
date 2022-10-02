@@ -3,9 +3,10 @@ package command
 import (
 	"context"
 	"fmt"
+	"math/rand"
+
 	"github.com/noodlensk/task-tracker/internal/tasks/domain/task"
 	"github.com/noodlensk/task-tracker/internal/tasks/domain/user"
-	"math/rand"
 )
 
 type ReAssignAllTasks struct {
@@ -33,14 +34,13 @@ func (h ReAssignAllTasksHandler) Handle(ctx context.Context, cmd ReAssignAllTask
 	}
 
 	for _, t := range allOpenTasks {
-		assignToUserNumber := rand.Intn(len(basicUsers))
+		assignToUserNumber := rand.Intn(len(basicUsers)) //nolint:gosec
 
 		err := h.taskRepo.UpdateTask(ctx, t.UID(), func(ctx context.Context, t *task.Task) (*task.Task, error) {
 			t.Assign(*basicUsers[assignToUserNumber])
 
 			return t, nil
 		})
-
 		if err != nil {
 			return fmt.Errorf("assign task %q to user %q: %w", t.UID(), basicUsers[assignToUserNumber].UID, err)
 		}

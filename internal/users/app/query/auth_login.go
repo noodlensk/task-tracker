@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 	"errors"
+
 	"github.com/noodlensk/task-tracker/internal/common/auth"
 	"github.com/noodlensk/task-tracker/internal/users/domain/user"
 )
@@ -32,7 +33,7 @@ func (h AuthLoginHandler) Handle(ctx context.Context, q AuthLogin) (*AuthResult,
 	}
 
 	if !u.PasswordMatch(q.Password) {
-		return nil, errors.New("password not match") //TODO: replace with proper type
+		return nil, errors.New("password not match") // TODO: replace with proper type
 	}
 
 	token, err := auth.GetToken(h.secret, auth.User{

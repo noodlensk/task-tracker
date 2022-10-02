@@ -2,6 +2,11 @@ package service
 
 import (
 	"context"
+	"log"
+	"net/http"
+	"os"
+	"testing"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/noodlensk/task-tracker/internal/common/clients/users"
@@ -10,10 +15,6 @@ import (
 	"github.com/noodlensk/task-tracker/internal/users/ports"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
-	"log"
-	"net/http"
-	"os"
-	"testing"
 )
 
 func TestGetUsers(t *testing.T) {

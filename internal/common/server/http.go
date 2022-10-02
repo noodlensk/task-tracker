@@ -2,16 +2,15 @@ package server
 
 import (
 	"context"
-	"github.com/noodlensk/task-tracker/internal/common/auth"
 	"net/http"
 	"time"
 
-	chi "github.com/go-chi/chi/v5"
-
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"go.uber.org/zap"
 
+	"github.com/noodlensk/task-tracker/internal/common/auth"
 	"github.com/noodlensk/task-tracker/internal/common/logs"
 )
 

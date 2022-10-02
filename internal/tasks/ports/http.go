@@ -1,14 +1,16 @@
 package ports
 
 import (
+	"net/http"
+
 	"github.com/go-chi/render"
+
 	"github.com/noodlensk/task-tracker/internal/common/server/httperr"
 	"github.com/noodlensk/task-tracker/internal/tasks/app"
 	"github.com/noodlensk/task-tracker/internal/tasks/app/command"
 	"github.com/noodlensk/task-tracker/internal/tasks/app/query"
 	"github.com/noodlensk/task-tracker/internal/tasks/domain/task"
 	"github.com/noodlensk/task-tracker/internal/tasks/domain/user"
-	"net/http"
 )
 
 type HTTPServer struct {

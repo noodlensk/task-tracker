@@ -60,6 +60,7 @@ func (r *UserInMemoryRepository) UpdateUser(ctx context.Context, userUID string,
 		userIdx   int
 		userFound bool
 	)
+
 	for i, v := range r.users {
 		if v.UID() == userUID {
 			userIdx = i
