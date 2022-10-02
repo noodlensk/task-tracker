@@ -90,7 +90,7 @@ func startService() error {
 
 	ok := tests.WaitForPort(httpAddr)
 	if !ok {
-		return errors.Errorf("Timed out waiting for trainings HTTP to come up")
+		return errors.Errorf("Timed out waiting for users HTTP to come up")
 	}
 
 	return nil

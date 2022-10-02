@@ -11,12 +11,8 @@ import (
 	"github.com/noodlensk/task-tracker/internal/common/clients/users"
 )
 
-func authorizationBearer(token string) func(context.Context, *http.Request) error {
-	return func(ctx context.Context, req *http.Request) error {
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
-
-		return nil
-	}
+type UsersHTTPClient struct {
+	client *users.ClientWithResponses
 }
 
 func NewUsersHTTPClient(t *testing.T, token string) UsersHTTPClient {
@@ -37,10 +33,6 @@ func NewUsersHTTPClient(t *testing.T, token string) UsersHTTPClient {
 	require.NoError(t, err)
 
 	return UsersHTTPClient{client: client}
-}
-
-type UsersHTTPClient struct {
-	client *users.ClientWithResponses
 }
 
 func (c UsersHTTPClient) GetUsers(t *testing.T) []users.User {

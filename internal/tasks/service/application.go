@@ -16,6 +16,13 @@ func NewApplication() (*app.Application, error) {
 	return newApplication(userRepo, taskRepo), nil
 }
 
+func NewComponentTestApplication() *app.Application {
+	taskRepo := adapters.NewTaskInMemoryRepository()
+	userRepo := adapters.NewUserInMemoryRepository()
+
+	return newApplication(userRepo, taskRepo)
+}
+
 func newApplication(userRepo user.Repository, taskRepo task.Repository) *app.Application {
 	return &app.Application{
 		Commands: app.Commands{

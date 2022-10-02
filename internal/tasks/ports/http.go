@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/render"
 
+	"github.com/noodlensk/task-tracker/internal/common/auth"
 	"github.com/noodlensk/task-tracker/internal/common/server/httperr"
 	"github.com/noodlensk/task-tracker/internal/tasks/app"
 	"github.com/noodlensk/task-tracker/internal/tasks/app/command"
@@ -67,9 +68,14 @@ func (h HTTPServer) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var u user.User
-	// TODO get user
-	t, err := task.NewTask(taskFromReq.Title, taskFromReq.Description, u)
+	u, err := auth.UserFromCtx(r.Context())
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+
+		return
+	}
+
+	t, err := task.NewTask(taskFromReq.Title, taskFromReq.Description, userToDomain(u))
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
 
@@ -83,7 +89,7 @@ func (h HTTPServer) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (h HTTPServer) MarkTaskAsComplete(w http.ResponseWriter, r *http.Request) {
@@ -94,11 +100,15 @@ func (h HTTPServer) MarkTaskAsComplete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var u user.User
-	// TODO get user
+	u, err := auth.UserFromCtx(r.Context())
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+
+		return
+	}
 
 	for _, uid := range taskFromReq.Uid {
-		if err := h.app.Commands.CompleteTask.Handle(r.Context(), command.CompleteTask{TaskUID: uid, User: u}); err != nil {
+		if err := h.app.Commands.CompleteTask.Handle(r.Context(), command.CompleteTask{TaskUID: uid, User: userToDomain(u)}); err != nil {
 			httperr.RespondWithSlugError(err, w, r)
 
 			return
@@ -109,10 +119,14 @@ func (h HTTPServer) MarkTaskAsComplete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h HTTPServer) ReassignTasks(w http.ResponseWriter, r *http.Request) {
-	var u user.User
-	// TODO get user
+	u, err := auth.UserFromCtx(r.Context())
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
 
-	if err := h.app.Commands.ReAssignAllTasks.Handle(r.Context(), command.ReAssignAllTasks{User: u}); err != nil {
+		return
+	}
+
+	if err := h.app.Commands.ReAssignAllTasks.Handle(r.Context(), command.ReAssignAllTasks{User: userToDomain(u)}); err != nil {
 		httperr.RespondWithSlugError(err, w, r)
 
 		return
@@ -121,4 +135,13 @@ func (h HTTPServer) ReassignTasks(w http.ResponseWriter, r *http.Request) {
 
 func NewHTTPServer(application *app.Application) HTTPServer {
 	return HTTPServer{application}
+}
+
+func userToDomain(u auth.User) user.User {
+	return user.User{
+		UID:   u.UUID,
+		Name:  u.Name,
+		Email: u.Email,
+		Role:  u.Role, // TODO: make it more secure
+	}
 }
