@@ -8,14 +8,17 @@ setup: setup-asyncap setup-openapi setup-lint ## Setup tooling
 openapi_http: ## Build stubs from openapi spec for backend
 	oapi-codegen --old-config-style -generate types -o internal/tasks/ports/openapi_types.gen.go -package ports api/openapi/tasks.yaml
 	oapi-codegen --old-config-style -generate chi-server -o internal/tasks/ports/openapi_api.gen.go -package ports api/openapi/tasks.yaml
-	oapi-codegen --old-config-style -generate types -o internal/common/clients/tasks/openapi_types.gen.go -package articles api/openapi/tasks.yaml
-	oapi-codegen --old-config-style -generate client -o internal/common/clients/tasks/openapi_api.gen.go -package articles api/openapi/tasks.yaml
+	oapi-codegen --old-config-style -generate types -o internal/common/clients/tasks/openapi_types.gen.go -package tasks api/openapi/tasks.yaml
+	oapi-codegen --old-config-style -generate client -o internal/common/clients/tasks/openapi_api.gen.go -package tasks api/openapi/tasks.yaml
 	oapi-codegen --old-config-style -generate types -o internal/users/ports/openapi_types.gen.go -package ports api/openapi/users.yaml
 	oapi-codegen --old-config-style -generate chi-server -o internal/users/ports/openapi_api.gen.go -package ports api/openapi/users.yaml
-	oapi-codegen --old-config-style -generate types -o internal/common/clients/users/openapi_types.gen.go -package articles api/openapi/users.yaml
-	oapi-codegen --old-config-style -generate client -o internal/common/clients/users/openapi_api.gen.go -package articles api/openapi/users.yaml
+	oapi-codegen --old-config-style -generate types -o internal/common/clients/users/openapi_types.gen.go -package users api/openapi/users.yaml
+	oapi-codegen --old-config-style -generate client -o internal/common/clients/users/openapi_api.gen.go -package users api/openapi/users.yaml
 fmt: ## gofmt and goimports all go files
 	find . -name '*.go' | while read -r file; do gofumpt -w "$$file"; goimports -w "$$file"; done
+test: ## Run tests
+	cd internal/common && go test -count=1 -p=8 -parallel=8 -race ./...
+	cd internal/users && go test -count=1 -p=8 -parallel=8 -race ./...
 dep: ## Get all dependencies
 	cd internal/common && go mod download && go mod tidy
 	cd internal/tasks && go mod download && go mod tidy

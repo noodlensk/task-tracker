@@ -31,7 +31,7 @@ func (h HTTPServer) AuthLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authResp := AuthLoginResponse{Token: res.Token}
+	authResp := AuthLoginResult{Token: res.Token}
 
 	render.Respond(w, r, authResp)
 }

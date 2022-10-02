@@ -81,7 +81,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthLoginResponse'
+                $ref: '#/components/schemas/AuthLoginResult'
         default:
           description: unexpected error
           content:
@@ -139,7 +139,7 @@ components:
           type: string
         password:
           type: string
-    AuthLoginResponse:
+    AuthLoginResult:
       type: object
       required: [ token ]
       properties:

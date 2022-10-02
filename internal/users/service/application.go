@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/noodlensk/task-tracker/internal/common/tests"
 	"github.com/noodlensk/task-tracker/internal/users/adapters"
 	"github.com/noodlensk/task-tracker/internal/users/app"
 	"github.com/noodlensk/task-tracker/internal/users/app/command"
@@ -15,9 +16,10 @@ func NewApplication(logger *zap.SugaredLogger) (*app.Application, error) {
 	return newApplication(logger, userRepo), nil
 }
 
-//func NewComponentTestApplication() *app.Application {
-//	return newApplication(tests.NewLogger())
-//}
+func NewComponentTestApplication() *app.Application {
+	userRepo := adapters.NewUserInMemoryRepository()
+	return newApplication(tests.NewLogger(), userRepo)
+}
 
 func newApplication(logger *zap.SugaredLogger, userRepo user.Repository) *app.Application {
 	return &app.Application{
