@@ -65,11 +65,16 @@ func (h HTTPServer) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.app.Commands.CreateUser.Handle(r.Context(), command.CreateUser{User: *u}); err != nil {
+	res, err := h.app.Commands.CreateUser.Handle(r.Context(), command.CreateUser{User: *u})
+	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
 
 		return
 	}
+
+	w.WriteHeader(http.StatusCreated)
+
+	render.Respond(w, r, userToResp(&res.User))
 }
 
 func (h HTTPServer) GetUsers(w http.ResponseWriter, r *http.Request, params GetUsersParams) {
@@ -86,26 +91,7 @@ func (h HTTPServer) GetUsers(w http.ResponseWriter, r *http.Request, params GetU
 	var respUsers []User
 
 	for _, u := range users {
-		name := u.Name()
-		email := u.Email()
-
-		var role UserRole
-
-		switch u.Role() {
-		case user.RoleAdmin:
-			role = UserRoleAdmin
-		case user.RoleManager:
-			role = UserRoleManager
-		case user.RoleBasic:
-			role = UserRoleBasic
-		}
-
-		respUsers = append(respUsers, User{
-			Id:    u.UID(),
-			Name:  &name,
-			Role:  role,
-			Email: &email,
-		})
+		respUsers = append(respUsers, userToResp(u))
 	}
 
 	render.Respond(w, r, Users{Users: respUsers})
@@ -113,4 +99,27 @@ func (h HTTPServer) GetUsers(w http.ResponseWriter, r *http.Request, params GetU
 
 func NewHTTPServer(application *app.Application) HTTPServer {
 	return HTTPServer{application}
+}
+
+func userToResp(u *user.User) User {
+	name := u.Name()
+	email := u.Email()
+
+	var role UserRole
+
+	switch u.Role() {
+	case user.RoleAdmin:
+		role = UserRoleAdmin
+	case user.RoleManager:
+		role = UserRoleManager
+	case user.RoleBasic:
+		role = UserRoleBasic
+	}
+
+	return User{
+		Id:    u.UID(),
+		Name:  &name,
+		Role:  role,
+		Email: &email,
+	}
 }

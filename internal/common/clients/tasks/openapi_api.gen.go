@@ -596,6 +596,7 @@ func ParseCreateTaskResponse(rsp *http.Response) (*CreateTaskResponse, error) {
 			return nil, err
 		}
 		response.JSONDefault = &dest
+
 	}
 
 	return response, nil
@@ -654,6 +655,7 @@ func ParseReassignTasksResponse(rsp *http.Response) (*ReassignTasksResponse, err
 			return nil, err
 		}
 		response.JSONDefault = &dest
+
 	}
 
 	return response, nil

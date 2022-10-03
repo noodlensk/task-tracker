@@ -27,6 +27,9 @@ dep: ## Get all dependencies
 	cd internal/common && go mod download && go mod tidy
 	cd internal/tasks && go mod download && go mod tidy
 	cd internal/users && go mod download && go mod tidy
+build: ## Build all projects
+	cd internal/tasks && go build
+	cd internal/users && go build
 start-env: ## Start the local env
 	docker-compose up -d
 

@@ -1,6 +1,8 @@
 package service
 
 import (
+	"github.com/ThreeDotsLabs/watermill/message"
+
 	"github.com/noodlensk/task-tracker/internal/users/adapters"
 	"github.com/noodlensk/task-tracker/internal/users/app"
 	"github.com/noodlensk/task-tracker/internal/users/app/command"
@@ -8,22 +10,22 @@ import (
 	"github.com/noodlensk/task-tracker/internal/users/domain/user"
 )
 
-func NewApplication() (*app.Application, error) {
+func NewApplication(publisher message.Publisher) (*app.Application, error) {
 	userRepo := adapters.NewUserInMemoryRepository()
 
-	return newApplication(userRepo), nil
+	return newApplication(userRepo, publisher), nil
 }
 
 func NewComponentTestApplication() *app.Application {
 	userRepo := adapters.NewUserInMemoryRepository()
 
-	return newApplication(userRepo)
+	return newApplication(userRepo, nil)
 }
 
-func newApplication(userRepo user.Repository) *app.Application {
+func newApplication(userRepo user.Repository, publisher message.Publisher) *app.Application {
 	return &app.Application{
 		Commands: app.Commands{
-			CreateUser: command.NewCreateUserHandler(userRepo),
+			CreateUser: command.NewCreateUserHandler(userRepo, publisher, "user.created"),
 		},
 		Queries: app.Queries{
 			AllUsers:  query.NewAllUsersHandler(userRepo),

@@ -41,13 +41,18 @@ func TestCreateUser(t *testing.T) {
 		Role:     users.CreateUserRequestRoleManager,
 	}
 
-	client.CreateUser(t, userToCreate)
+	createdUser := client.CreateUser(t, userToCreate)
+
+	require.NotEmpty(t, createdUser.Id)
+	require.NotEmpty(t, createdUser.Name)
+	require.NotEmpty(t, createdUser.Email)
+	require.NotEmpty(t, createdUser.Role)
 
 	userList := client.GetUsers(t)
 	userFound := false
 
 	for _, u := range userList {
-		if u.Email != nil && *u.Email == userToCreate.Email {
+		if u.Id == createdUser.Id {
 			userFound = true
 
 			require.Equal(t, *u.Name, userToCreate.Name)

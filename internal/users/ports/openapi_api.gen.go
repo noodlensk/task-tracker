@@ -14,6 +14,7 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+
 	// (POST /auth/login)
 	AuthLogin(w http.ResponseWriter, r *http.Request)
 
@@ -39,7 +40,7 @@ func (siw *ServerInterfaceWrapper) AuthLogin(w http.ResponseWriter, r *http.Requ
 
 	ctx = context.WithValue(ctx, BearerAuthScopes, []string{""})
 
-	handler := func(w http.ResponseWriter, r *http.Request) {
+	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AuthLogin(w, r)
 	}
 
@@ -63,6 +64,7 @@ func (siw *ServerInterfaceWrapper) GetUsers(w http.ResponseWriter, r *http.Reque
 
 	// ------------- Required query parameter "offset" -------------
 	if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "offset"})
 		return
@@ -76,6 +78,7 @@ func (siw *ServerInterfaceWrapper) GetUsers(w http.ResponseWriter, r *http.Reque
 
 	// ------------- Required query parameter "limit" -------------
 	if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
+
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
 		return
@@ -87,7 +90,7 @@ func (siw *ServerInterfaceWrapper) GetUsers(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	handler := func(w http.ResponseWriter, r *http.Request) {
+	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetUsers(w, r, params)
 	}
 
@@ -104,7 +107,7 @@ func (siw *ServerInterfaceWrapper) CreateUser(w http.ResponseWriter, r *http.Req
 
 	ctx = context.WithValue(ctx, BearerAuthScopes, []string{""})
 
-	handler := func(w http.ResponseWriter, r *http.Request) {
+	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateUser(w, r)
 	}
 

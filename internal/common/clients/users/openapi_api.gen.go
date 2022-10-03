@@ -405,6 +405,7 @@ func (r GetUsersResponse) StatusCode() int {
 type CreateUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON201      *User
 	JSONDefault  *Error
 }
 
@@ -547,12 +548,20 @@ func ParseCreateUserResponse(rsp *http.Response) (*CreateUserResponse, error) {
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest User
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSONDefault = &dest
+
 	}
 
 	return response, nil

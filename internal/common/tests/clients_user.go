@@ -48,15 +48,16 @@ func (c UsersHTTPClient) GetUsers(t *testing.T) []users.User {
 	return usersList.Users
 }
 
-func (c UsersHTTPClient) CreateUser(t *testing.T, u users.CreateUserRequest) {
+func (c UsersHTTPClient) CreateUser(t *testing.T, u users.CreateUserRequest) users.User {
 	t.Helper()
 
-	resp, err := c.client.CreateUser(context.Background(), u)
+	resp, err := c.client.CreateUserWithResponse(context.Background(), u)
 
 	require.NoError(t, err)
-	require.NoError(t, resp.Body.Close())
 
-	require.Equal(t, http.StatusOK, resp.StatusCode)
+	require.Equal(t, http.StatusCreated, resp.StatusCode())
+
+	return *resp.JSON201
 }
 
 func (c UsersHTTPClient) AuthLogin(t *testing.T, email, password string) string {

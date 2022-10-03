@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 
@@ -28,7 +29,18 @@ func main() {
 func run(logger *zap.SugaredLogger) error {
 	ctx := context.Background()
 
-	app, err := service.NewApplication()
+	publisher, err := kafka.NewPublisher(
+		kafka.PublisherConfig{
+			Brokers:   []string{"localhost:9092"},
+			Marshaler: kafka.DefaultMarshaler{},
+		},
+		logs.NewWatermillLogger(logger.With("component", "watermill-publisher-kafka")),
+	)
+	if err != nil {
+		return err
+	}
+
+	app, err := service.NewApplication(publisher)
 	if err != nil {
 		return err
 	}
