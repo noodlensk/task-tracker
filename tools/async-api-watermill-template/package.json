@@ -1,0 +1,32 @@
+{
+    "name": "async-api-watermill-template",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "generator": {
+        "renderer": "react",
+        "parameters": {
+            "moduleName": {
+                "description": "name of the go module to be generated",
+                "default": "go-async-api"
+            },
+            "mode": {
+                "description": "server or client",
+                "default": "server"
+            }
+        },
+        "generator": ">=1.3.0 <2.0.0",
+        "supportedProtocols": []
+    },
+    "license": "ISC",
+    "dependencies": {
+        "@asyncapi/generator-filters": "^2.0.0",
+        "@asyncapi/generator-hooks": "^0.1.0",
+        "@asyncapi/generator-react-sdk": "^0.2.23",
+        "@asyncapi/modelina": "^0.49.0"
+    }
+}

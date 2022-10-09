@@ -1,4 +1,4 @@
-package ports
+package http
 
 import (
 	"net/http"
@@ -14,11 +14,11 @@ import (
 	"github.com/noodlensk/task-tracker/internal/tasks/domain/user"
 )
 
-type HTTPServer struct {
+type Server struct {
 	app *app.Application
 }
 
-func (h HTTPServer) GetTasks(w http.ResponseWriter, r *http.Request, params GetTasksParams) {
+func (h Server) GetTasks(w http.ResponseWriter, r *http.Request, params GetTasksParams) {
 	tasks, err := h.app.Queries.AllTasks.Handle(r.Context(), query.AllTasks{
 		Limit:  params.Limit,
 		Offset: params.Offset,
@@ -60,7 +60,7 @@ func (h HTTPServer) GetTasks(w http.ResponseWriter, r *http.Request, params GetT
 	render.Respond(w, r, Tasks{Tasks: respTasks})
 }
 
-func (h HTTPServer) CreateTask(w http.ResponseWriter, r *http.Request) {
+func (h Server) CreateTask(w http.ResponseWriter, r *http.Request) {
 	taskFromReq := &Task{}
 	if err := render.Decode(r, taskFromReq); err != nil {
 		httperr.RespondWithSlugError(err, w, r)
@@ -92,7 +92,7 @@ func (h HTTPServer) CreateTask(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (h HTTPServer) MarkTaskAsComplete(w http.ResponseWriter, r *http.Request) {
+func (h Server) MarkTaskAsComplete(w http.ResponseWriter, r *http.Request) {
 	taskFromReq := &TaskUpdate{}
 	if err := render.Decode(r, taskFromReq); err != nil {
 		httperr.RespondWithSlugError(err, w, r)
@@ -118,7 +118,7 @@ func (h HTTPServer) MarkTaskAsComplete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h HTTPServer) ReassignTasks(w http.ResponseWriter, r *http.Request) {
+func (h Server) ReassignTasks(w http.ResponseWriter, r *http.Request) {
 	u, err := auth.UserFromCtx(r.Context())
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
@@ -133,8 +133,8 @@ func (h HTTPServer) ReassignTasks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func NewHTTPServer(application *app.Application) HTTPServer {
-	return HTTPServer{application}
+func NewHTTPServer(application *app.Application) Server {
+	return Server{application}
 }
 
 func userToDomain(u auth.User) user.User {

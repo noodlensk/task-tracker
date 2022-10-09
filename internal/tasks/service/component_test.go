@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	http2 "github.com/noodlensk/task-tracker/internal/tasks/ports/http"
 	"log"
 	"net/http"
 	"os"
@@ -15,7 +16,6 @@ import (
 	"github.com/noodlensk/task-tracker/internal/common/clients/tasks"
 	"github.com/noodlensk/task-tracker/internal/common/server"
 	"github.com/noodlensk/task-tracker/internal/common/tests"
-	"github.com/noodlensk/task-tracker/internal/tasks/ports"
 )
 
 func TestCreateTask(t *testing.T) {
@@ -59,7 +59,7 @@ func startService() error {
 	httpAddr := "127.0.0.1:8080"
 
 	go server.RunHTTPServerOnAddr(ctx, httpAddr, tests.NewLogger(), func(router chi.Router) http.Handler {
-		return ports.HandlerFromMux(ports.NewHTTPServer(app), router)
+		return http2.HandlerFromMux(http2.NewHTTPServer(app), router)
 	})
 
 	ok := tests.WaitForPort(httpAddr)

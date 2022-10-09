@@ -15,10 +15,19 @@ channels:
     publish:
       message:
         $ref: '#/components/messages/taskAssigned'
-  tasks.compleated:
+  tasks.completed:
     publish:
       message:
         $ref: '#/components/messages/taskCompleted'
+  users.created:
+    subscribe:
+      message:
+        $ref: 'users.yaml#/components/messages/userCreated'
+  users.updated:
+    subscribe:
+      message:
+        $ref: 'users.yaml#/components/messages/userUpdated'
+
 components:
   messages:
     taskCompleted:
