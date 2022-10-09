@@ -8,14 +8,15 @@ setup: setup-asyncap setup-openapi setup-lint ## Setup tooling
 openapi_http: ## Build stubs from openapi spec for backend
 	oapi-codegen --old-config-style -generate types -o internal/tasks/ports/http/openapi_types.gen.go -package http api/openapi/tasks.yaml
 	oapi-codegen --old-config-style -generate chi-server -o internal/tasks/ports/http/openapi_api.gen.go -package http api/openapi/tasks.yaml
-	oapi-codegen --old-config-style -generate types -o internal/common/clients/tasks/openapi_types.gen.go -package tasks api/openapi/tasks.yaml
-	oapi-codegen --old-config-style -generate client -o internal/common/clients/tasks/openapi_api.gen.go -package tasks api/openapi/tasks.yaml
+	oapi-codegen --old-config-style -generate types -o internal/common/clients/tasks/http/openapi_types.gen.go -package http api/openapi/tasks.yaml
+	oapi-codegen --old-config-style -generate client -o internal/common/clients/tasks/http/openapi_api.gen.go -package http api/openapi/tasks.yaml
 	oapi-codegen --old-config-style -generate types -o internal/users/ports/openapi_types.gen.go -package ports api/openapi/users.yaml
 	oapi-codegen --old-config-style -generate chi-server -o internal/users/ports/openapi_api.gen.go -package ports api/openapi/users.yaml
 	oapi-codegen --old-config-style -generate types -o internal/common/clients/users/openapi_types.gen.go -package users api/openapi/users.yaml
 	oapi-codegen --old-config-style -generate client -o internal/common/clients/users/openapi_api.gen.go -package users api/openapi/users.yaml
 asyncapi: ## Build stubs from asyncapi spec
 	ag api/asyncapi/tasks.yaml ./tools/async-api-watermill-template -o internal/tasks/ports/async -p moduleName=async -p mode=server --force-write
+	ag internal/common/tests/asyncapi/tasks.yaml ./tools/async-api-watermill-template -o internal/common/clients/tasks/async -p moduleName=async -p mode=client --force-write
 fmt: ## gofmt and goimports all go files
 	find . -name '*.go' | while read -r file; do gofumpt -w "$$file"; goimports -w "$$file"; done
 lint: ## Lint

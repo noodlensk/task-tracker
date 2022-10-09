@@ -28,7 +28,7 @@ func newApplication(userRepo user.Repository, taskRepo task.Repository) *app.App
 	return &app.Application{
 		Commands: app.Commands{
 			CompleteTask:     command.NewCompleteTaskHandler(taskRepo),
-			CreateTask:       command.NewCreateTaskHandler(taskRepo),
+			CreateTask:       command.NewCreateTaskHandler(userRepo, taskRepo),
 			ReAssignAllTasks: command.NewReAssignAllTasksHandler(userRepo, taskRepo),
 		},
 		CUDEvents: app.CUDEvents{

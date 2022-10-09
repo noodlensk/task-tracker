@@ -2,37 +2,53 @@ package service
 
 import (
 	"context"
-	http2 "github.com/noodlensk/task-tracker/internal/tasks/ports/http"
 	"log"
 	"net/http"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
-	"github.com/noodlensk/task-tracker/internal/common/clients/tasks"
+	tasksAsyncClient "github.com/noodlensk/task-tracker/internal/common/clients/tasks/async"
+	tasksHTTPClient "github.com/noodlensk/task-tracker/internal/common/clients/tasks/http"
 	"github.com/noodlensk/task-tracker/internal/common/server"
 	"github.com/noodlensk/task-tracker/internal/common/tests"
+	tasksAsyncServer "github.com/noodlensk/task-tracker/internal/tasks/ports/async"
+	tasksHTTPServer "github.com/noodlensk/task-tracker/internal/tasks/ports/http"
 )
 
 func TestCreateTask(t *testing.T) {
 	t.Parallel()
 
 	token := tests.FakeAdminJWT(t, uuid.New().String())
-	client := tests.NewTasksHTTPClient(t, token)
+	httpClient := tests.NewTasksHTTPClient(t, token)
 
-	taskToCreate := tasks.Task{
+	asyncClient := tests.NewTasksAsyncClient(t)
+
+	userToCreate := tasksAsyncClient.UserCreated{
+		Id:    "myUID",
+		Name:  "Dmitry",
+		Email: "some@email.com",
+		Role:  "basic",
+	}
+
+	asyncClient.UserCreated(t, userToCreate)
+
+	time.Sleep(time.Second * 1) // TODO: replace it with more stable solution
+
+	taskToCreate := tasksHTTPClient.Task{
 		Description: "some description",
 		Title:       "My Task title",
 	}
-	client.CreateTask(t, taskToCreate)
+	httpClient.CreateTask(t, taskToCreate)
 
-	taskList := client.GetAllTasks(t)
+	taskList := httpClient.GetAllTasks(t)
 
-	var taskCreated *tasks.Task
+	var taskCreated *tasksHTTPClient.Task
 
 	for _, task := range taskList {
 		if task.Title == taskToCreate.Title { //TODO: return UID of created task
@@ -47,9 +63,9 @@ func TestCreateTask(t *testing.T) {
 	require.Equal(t, taskToCreate.Title, taskCreated.Title)
 	require.Equal(t, taskToCreate.Description, taskCreated.Description)
 	require.NotEmpty(t, taskCreated.Uid)
-	// require.NotEmpty(t, taskCreated.AssignedTo) # TODO: fix it
+	require.Equal(t, userToCreate.Id, *taskCreated.AssignedTo)
 	require.NotEmpty(t, taskCreated.CreatedAt)
-	require.Equal(t, taskCreated.Status, tasks.NEW)
+	require.Equal(t, tasksHTTPClient.NEW, *taskCreated.Status)
 }
 
 func startService() error {
@@ -58,9 +74,20 @@ func startService() error {
 
 	httpAddr := "127.0.0.1:8080"
 
+	asyncServer, err := tests.NewAsyncSubscriber()
+	if err != nil {
+		return err
+	}
+
+	if err := tasksAsyncServer.Register(tasksAsyncServer.NewAsyncServer(app), asyncServer.Router, asyncServer.Subscriber); err != nil {
+		return err
+	}
+
 	go server.RunHTTPServerOnAddr(ctx, httpAddr, tests.NewLogger(), func(router chi.Router) http.Handler {
-		return http2.HandlerFromMux(http2.NewHTTPServer(app), router)
+		return tasksHTTPServer.HandlerFromMux(tasksHTTPServer.NewHTTPServer(app), router)
 	})
+
+	go asyncServer.Start(ctx) // TODO: wait for start
 
 	ok := tests.WaitForPort(httpAddr)
 	if !ok {
