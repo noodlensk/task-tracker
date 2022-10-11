@@ -19,6 +19,10 @@ channels:
     publish:
       message:
         $ref: '#/components/messages/taskCompleted'
+  tasks.created:
+    publish:
+      message:
+        $ref: '#/components/messages/taskCreated'
   users.created:
     subscribe:
       message:
@@ -36,6 +40,10 @@ components:
         $ref: "#/components/schemas/taskPayload"
     taskAssigned:
       name: TaskAssigned
+      payload:
+        $ref: "#/components/schemas/taskPayload"
+    taskCreated:
+      name: TaskCreated
       payload:
         $ref: "#/components/schemas/taskPayload"
     tasksReAssign:

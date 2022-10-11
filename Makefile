@@ -17,22 +17,30 @@ openapi_http: ## Build stubs from openapi spec for backend
 asyncapi: ## Build stubs from asyncapi spec
 	ag api/asyncapi/tasks.yaml ./tools/async-api-watermill-template -o internal/tasks/ports/async -p moduleName=async -p mode=server --force-write
 	ag internal/common/tests/asyncapi/tasks.yaml ./tools/async-api-watermill-template -o internal/common/clients/tasks/async -p moduleName=async -p mode=client --force-write
+	ag api/asyncapi/accounting.yaml ./tools/async-api-watermill-template -o internal/accounting/ports/async -p moduleName=async -p mode=server --force-write
+	ag api/asyncapi/accounting.yaml ./tools/async-api-watermill-template -o internal/accounting/adapters -p moduleName=adapters -p mode=client --force-write
+	ag internal/common/tests/asyncapi/accounting.yaml ./tools/async-api-watermill-template -o internal/common/clients/accounting/async/publisher -p moduleName=publisher -p mode=client --force-write
+	ag internal/common/tests/asyncapi/accounting.yaml ./tools/async-api-watermill-template -o internal/common/clients/accounting/async/subscriber -p moduleName=subscriber -p mode=server --force-write
 fmt: ## gofmt and goimports all go files
 	find . -name '*.go' | while read -r file; do gofumpt -w "$$file"; goimports -w "$$file"; done
 lint: ## Lint
 	cd internal/common && golangci-lint run
 	cd internal/users && golangci-lint run
 	cd internal/tasks && golangci-lint run
+	cd internal/accounting && golangci-lint run
 test: ## Run tests
 	cd internal/common && go test -count=1 -p=8 -parallel=8 -race ./...
 	cd internal/users && go test -count=1 -p=8 -parallel=8 -race ./...
+	cd internal/accounting && go test -count=1 -p=8 -parallel=8 -race ./...
 dep: ## Get all dependencies
 	cd internal/common && go mod download && go mod tidy
 	cd internal/tasks && go mod download && go mod tidy
 	cd internal/users && go mod download && go mod tidy
+	cd internal/accounting && go mod download && go mod tidy
 build: ## Build all projects
 	cd internal/tasks && go build
 	cd internal/users && go build
+	cd internal/accounting && go build
 start-env: ## Start the local env
 	docker-compose up -d
 

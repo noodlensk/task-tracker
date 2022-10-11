@@ -4,66 +4,49 @@ info:
   version: 1.0.0
   description: TODO
 channels:
-  tasks.reassign:
-    publish:
-      message:
-        $ref: '#/components/messages/tasksReAssign'
+  tasks.assigned:
     subscribe:
       message:
-        $ref: '#/components/messages/tasksReAssign'
-  tasks.assigned:
+        $ref: "tasks.yaml#/components/messages/taskAssigned"
+  tasks.created:
+    subscribe:
+      message:
+        $ref: "tasks.yaml#/components/messages/taskCreated"
+  tasks.completed:
+    subscribe:
+      message:
+        $ref: "tasks.yaml#/components/messages/taskCompleted"
+  users.created:
+    subscribe:
+      message:
+        $ref: 'users.yaml#/components/messages/userCreated'
+  users.updated:
+    subscribe:
+      message:
+        $ref: 'users.yaml#/components/messages/userUpdated'
+  accounting.task_estimated:
     publish:
       message:
-        $ref: '#/components/messages/taskAssigned'
-  tasks.compleated:
-    publish:
-      message:
-        $ref: '#/components/messages/taskCompleted'
+        $ref: '#/components/messages/taskEstimated'
 components:
   messages:
-    taskCompleted:
-      name: TaskCompleted
+    taskEstimated:
+      name: TaskEstimated
       payload:
-        $ref: "#/components/schemas/taskPayload"
-    taskAssigned:
-      name: TaskAssigned
-      payload:
-        $ref: "#/components/schemas/taskPayload"
-    tasksReAssign:
-      name: TasksReAssign
-      payload:
-        $ref: "#/components/schemas/reassignTasks"
+        $ref: "#/components/schemas/taskEstimated"
   schemas:
-    taskPayload:
+    taskEstimated:
       type: object
       properties:
         id:
           type: string
-        title:
-          type: string
-        description:
-          type: string
-        assigned_to:
-          type: string
-        created_by:
-          type: string
-        status:
-          type: string
-          enum: ["NEW", "DONE"]
-        created_at:
-          type: string
-          format: date-time
-        modified_at:
-          type: string
-          format: date-time
+        assignedPrice:
+          type: number
+        competedPrice:
+          type: number
         sentAt:
           $ref: "#/components/schemas/sentAt"
     sentAt:
       type: string
       format: date-time
       description: Date and time when the message was sent.
-    reassignTasks:
-      type: object
-      properties:
-        asked_by_user:
-          type: string

@@ -1,0 +1,48 @@
+asyncapi: 2.4.0
+info:
+  title: Accounting
+  version: 1.0.0
+  description: TODO
+channels:
+  users.created:
+    publish:
+      message:
+        $ref: '../../../../api/asyncapi/users.yaml#/components/messages/userCreated'
+    subscribe:
+      message:
+        $ref: '../../../../api/asyncapi/users.yaml#/components/messages/userCreated'
+  users.updated:
+    publish:
+      message:
+        $ref: '../../../../api/asyncapi/users.yaml#/components/messages/userUpdated'
+    subscribe:
+      message:
+        $ref: '../../../../api/asyncapi/users.yaml#/components/messages/userUpdated'
+  tasks.assigned:
+    publish:
+      message:
+        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskAssigned"
+    subscribe:
+      message:
+        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskAssigned"
+  tasks.created:
+    publish:
+      message:
+        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskCreated"
+    subscribe:
+      message:
+        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskCreated"
+  tasks.completed:
+    publish:
+      message:
+        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskCompleted"
+    subscribe:
+      message:
+        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskCompleted"
+  accounting.task_estimated:
+    publish:
+      message:
+        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/taskEstimated"
+    subscribe:
+      message:
+        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/taskEstimated"
