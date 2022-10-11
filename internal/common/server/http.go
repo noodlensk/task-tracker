@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/cors"
 	"go.uber.org/zap"
 
+	"github.com/noodlensk/task-tracker/internal/common/auth"
 	"github.com/noodlensk/task-tracker/internal/common/logs"
 )
 
@@ -68,4 +69,5 @@ func setAPIMiddlewares(router *chi.Mux, logger *zap.SugaredLogger) {
 	)
 
 	router.Use(logs.NewHTTPMiddleware(logger))
+	router.Use(auth.JWTHttpMiddleware{Secret: "secret", AuthURL: "/api/auth/login"}.Middleware)
 }

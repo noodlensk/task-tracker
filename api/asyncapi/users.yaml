@@ -1,0 +1,52 @@
+asyncapi: 2.4.0
+info:
+  title: Users
+  version: 1.0.0
+  description: TODO
+channels:
+  users.created:
+    publish:
+      message:
+        $ref: '#/components/messages/userCreated'
+  users.updated:
+    publish:
+      message:
+        $ref: '#/components/messages/userUpdated'
+components:
+  messages:
+    userCreated:
+      name: UserCreated
+      payload:
+        $ref: "#/components/schemas/userPayload"
+    userUpdated:
+      name: UserUpdated
+      payload:
+        $ref: "#/components/schemas/userPayload"
+  schemas:
+    userPayload:
+      type: object
+      required: [ id, role ]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum: [ "admin", "manager", "basic" ]
+        created_at:
+          type: string
+          format: date-time
+        modified_at:
+          type: string
+          format: date-time
+        sentAt:
+          $ref: "#/components/schemas/sentAt"
+    sentAt:
+      type: string
+      format: date-time
+      description: Date and time when the message was sent.

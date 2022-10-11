@@ -111,7 +111,7 @@ components:
       type: object
       required: [ title, description ]
       properties:
-        id:
+        uid:
           type: string
         title:
           type: string
@@ -140,9 +140,9 @@ components:
             $ref: '#/components/schemas/Task'
     TaskUpdate:
       type: object
-      required: [id]
+      required: [uid]
       properties:
-        id:
+        uid:
           type: array
           items:
             type: string

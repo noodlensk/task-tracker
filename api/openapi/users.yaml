@@ -16,6 +16,24 @@ paths:
   /users:
     get:
       operationId: getUsers
+      parameters:
+        - in: query
+          name: offset
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: limit
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The numbers of items to return
       responses:
         '200':
           description: todo
@@ -23,6 +41,51 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Users'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      operationId: createUser
+      requestBody:
+        description: todo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/login:
+    post:
+      operationId: authLogin
+      requestBody:
+        description: todo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLoginRequest'
+      responses:
+        '200':
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthLoginResult'
         default:
           description: unexpected error
           content:
@@ -44,9 +107,48 @@ components:
           type: string
         name:
           type: string
+        email:
+          type: string
+        password:
+          type: string
         role:
           type: string
-          enum: ["ADMIN", "MANAGER", "DEVELOPER"]
+          enum: [ "admin", "manager", "basic" ]
+    CreateUserRequest:
+      type: object
+      required: [ name, email, role, password ]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum: [ "admin", "manager", "basic" ]
+    Users:
+      type: object
+      required: [ users ]
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    AuthLoginRequest:
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    AuthLoginResult:
+      type: object
+      required: [ token ]
+      properties:
+        token:
+          type: string
     Error:
       type: object
       required:
