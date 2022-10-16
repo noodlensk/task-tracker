@@ -18,67 +18,27 @@ func Register(application ServerInterface, router *message.Router, subscriber me
 		"tasks.reassign",
 		"tasks.reassign",
 		subscriber,
-		asyncServer.TasksReAssign,
-	)
-
-	router.AddNoPublisherHandler(
-		"users.created",
-		"users.created",
-		subscriber,
-		asyncServer.UserCreated,
-	)
-
-	router.AddNoPublisherHandler(
-		"users.updated",
-		"users.updated",
-		subscriber,
-		asyncServer.UserUpdated,
+		asyncServer.ReAssignTasks,
 	)
 
 	return nil
 }
 
 type ServerInterface interface {
-	TasksReAssign(ctx context.Context, e TasksReAssign) error
-
-	UserCreated(ctx context.Context, e UserCreated) error
-
-	UserUpdated(ctx context.Context, e UserUpdated) error
+	ReAssignTasks(ctx context.Context, e ReAssignTasks) error
 }
 
 type ServerInterfaceWrapper struct {
 	app ServerInterface
 }
 
-func (s ServerInterfaceWrapper) TasksReAssign(msg *message.Message) error {
-	event := &TasksReAssign{}
+func (s ServerInterfaceWrapper) ReAssignTasks(msg *message.Message) error {
+	event := &ReAssignTasks{}
 
 	err := json.Unmarshal(msg.Payload, &event)
 	if err != nil {
 		return errors.Wrap(err, "parse event")
 	}
 
-	return s.app.TasksReAssign(msg.Context(), *event)
-}
-
-func (s ServerInterfaceWrapper) UserCreated(msg *message.Message) error {
-	event := &UserCreated{}
-
-	err := json.Unmarshal(msg.Payload, &event)
-	if err != nil {
-		return errors.Wrap(err, "parse event")
-	}
-
-	return s.app.UserCreated(msg.Context(), *event)
-}
-
-func (s ServerInterfaceWrapper) UserUpdated(msg *message.Message) error {
-	event := &UserUpdated{}
-
-	err := json.Unmarshal(msg.Payload, &event)
-	if err != nil {
-		return errors.Wrap(err, "parse event")
-	}
-
-	return s.app.UserUpdated(msg.Context(), *event)
+	return s.app.ReAssignTasks(msg.Context(), *event)
 }

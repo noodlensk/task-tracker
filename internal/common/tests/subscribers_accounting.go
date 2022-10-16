@@ -68,26 +68,6 @@ func (a AccountingAsyncSubscriber) WaitForUserPayed(ctx context.Context, userUID
 	}
 }
 
-func (a AccountingAsyncSubscriber) UserCreated(ctx context.Context, e subscriber.UserCreated) error {
-	return nil
-}
-
-func (a AccountingAsyncSubscriber) UserUpdated(ctx context.Context, e subscriber.UserUpdated) error {
-	return nil
-}
-
-func (a AccountingAsyncSubscriber) TaskAssigned(ctx context.Context, e subscriber.TaskAssigned) error {
-	return nil
-}
-
-func (a AccountingAsyncSubscriber) TaskCreated(ctx context.Context, e subscriber.TaskCreated) error {
-	return nil
-}
-
-func (a AccountingAsyncSubscriber) TaskCompleted(ctx context.Context, e subscriber.TaskCompleted) error {
-	return nil
-}
-
 func NewAccountingAsyncSubscriber(t *testing.T) *AccountingAsyncSubscriber {
 	t.Helper()
 

@@ -9,6 +9,8 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
+	"github.com/noodlensk/task-tracker/internal/accounting/adapters"
+	"github.com/noodlensk/task-tracker/internal/accounting/data/subscriber"
 	"github.com/noodlensk/task-tracker/internal/accounting/ports/async"
 	"github.com/noodlensk/task-tracker/internal/accounting/service"
 	"github.com/noodlensk/task-tracker/internal/common/logs"
@@ -28,7 +30,7 @@ func main() {
 func run(logger *zap.SugaredLogger) error {
 	ctx := context.Background()
 
-	publisher, err := kafka.NewPublisher(
+	pub, err := kafka.NewPublisher(
 		kafka.PublisherConfig{
 			Brokers:   []string{"localhost:9092"},
 			Marshaler: kafka.DefaultMarshaler{},
@@ -39,12 +41,7 @@ func run(logger *zap.SugaredLogger) error {
 		return err
 	}
 
-	app, err := service.NewApplication(publisher, logger)
-	if err != nil {
-		return err
-	}
-
-	subscriber, err := kafka.NewSubscriber(
+	sub, err := kafka.NewSubscriber(
 		kafka.SubscriberConfig{
 			Brokers:     []string{"localhost:9092"},
 			Unmarshaler: kafka.DefaultMarshaler{},
@@ -55,12 +52,24 @@ func run(logger *zap.SugaredLogger) error {
 		return err
 	}
 
-	watermillServer, err := server.NewWatermillServer(subscriber, logger.With("component", "watermill"))
+	usersRepo := adapters.NewUserInMemoryRepository()
+	taskRepo := adapters.NewTaskInMemoryRepository()
+
+	app, err := service.NewApplication(usersRepo, taskRepo, pub, logger)
+	if err != nil {
+		return err
+	}
+
+	watermillServer, err := server.NewWatermillServer(sub, logger.With("component", "watermill"))
 	if err != nil {
 		return err
 	}
 
 	if err := async.Register(async.NewAsyncServer(app), watermillServer.Router, watermillServer.Subscriber); err != nil {
+		return err
+	}
+
+	if err := subscriber.Register(subscriber.NewAsyncServer(taskRepo, usersRepo), watermillServer.Router, watermillServer.Subscriber); err != nil {
 		return err
 	}
 

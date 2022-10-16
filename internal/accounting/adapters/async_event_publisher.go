@@ -2,7 +2,6 @@ package adapters
 
 import (
 	"context"
-	"time"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"go.uber.org/zap"
@@ -20,7 +19,6 @@ func (a AsyncEventPublisher) UserChargedForAssignedTask(ctx context.Context, e c
 		UserUid: e.UserUID,
 		Reason:  "", // TODO: fix this
 		Amount:  e.Amount,
-		SentAt:  time.Now(),
 	})
 	if err != nil {
 		a.logger.Errorw("Failed to publish event", "err", err)
@@ -32,7 +30,6 @@ func (a AsyncEventPublisher) PayedForFinishedTask(ctx context.Context, e command
 		UserUid: e.UserUID,
 		Reason:  "", // TODO: fix this
 		Amount:  e.Amount,
-		SentAt:  time.Now(),
 	})
 	if err != nil {
 		a.logger.Errorw("Failed to publish event", "err", err)
@@ -44,7 +41,6 @@ func (a AsyncEventPublisher) TaskPriceEstimated(ctx context.Context, e command.T
 		Id:            e.TaskUID,
 		AssignedPrice: e.PriceAssigned,
 		CompetedPrice: e.PriceFinished,
-		SentAt:        time.Now(),
 	})
 	if err != nil {
 		a.logger.Errorw("Failed to publish event", "err", err)

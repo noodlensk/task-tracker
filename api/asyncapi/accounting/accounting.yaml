@@ -1,0 +1,31 @@
+asyncapi: 2.4.0
+info:
+  title: Accounting
+  version: 1.0.0
+  description: TODO
+defaultContentType: application/json
+channels:
+  tasks.assigned:
+    subscribe:
+      message:
+        $ref: "../tasks/messages/task-assigned.yaml"
+  tasks.created:
+    subscribe:
+      message:
+        $ref: "../tasks/messages/task-created.yaml"
+  tasks.completed:
+    subscribe:
+      message:
+        $ref: "../tasks/messages/task-completed.yaml"
+  accounting.task_estimated:
+    publish:
+      message:
+        $ref: 'messages/task-estimated.yaml'
+  accounting.user_charged:
+    publish:
+      message:
+        $ref: 'messages/user-charged.yaml'
+  accounting.user_payed:
+    publish:
+      message:
+        $ref: 'messages/user-payed.yaml'

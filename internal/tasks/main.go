@@ -13,6 +13,9 @@ import (
 
 	"github.com/noodlensk/task-tracker/internal/common/logs"
 	"github.com/noodlensk/task-tracker/internal/common/server"
+	"github.com/noodlensk/task-tracker/internal/tasks/adapters"
+	"github.com/noodlensk/task-tracker/internal/tasks/data/publisher"
+	"github.com/noodlensk/task-tracker/internal/tasks/data/subscriber"
 	"github.com/noodlensk/task-tracker/internal/tasks/ports/async"
 	httpTasks "github.com/noodlensk/task-tracker/internal/tasks/ports/http"
 	"github.com/noodlensk/task-tracker/internal/tasks/service"
@@ -31,12 +34,7 @@ func main() {
 func run(logger *zap.SugaredLogger) error {
 	ctx := context.Background()
 
-	app, err := service.NewApplication()
-	if err != nil {
-		return err
-	}
-
-	subscriber, err := kafka.NewSubscriber(
+	sub, err := kafka.NewSubscriber(
 		kafka.SubscriberConfig{
 			Brokers:     []string{"localhost:9092"},
 			Unmarshaler: kafka.DefaultMarshaler{},
@@ -47,7 +45,30 @@ func run(logger *zap.SugaredLogger) error {
 		return err
 	}
 
-	watermillServer, err := server.NewWatermillServer(subscriber, logger.With("component", "watermill"))
+	watermillServer, err := server.NewWatermillServer(sub, logger.With("component", "watermill"))
+	if err != nil {
+		return err
+	}
+
+	pub, err := kafka.NewPublisher(
+		kafka.PublisherConfig{
+			Brokers:   []string{"localhost:9092"},
+			Marshaler: kafka.DefaultMarshaler{},
+		},
+		logs.NewWatermillLogger(logger.With("component", "watermill-publisher-kafka")),
+	)
+	if err != nil {
+		return err
+	}
+
+	taskRepo := adapters.NewTaskInMemoryRepository(publisher.NewPublisherClient(pub))
+	userRepo := adapters.NewUserInMemoryRepository()
+
+	if err := subscriber.Register(subscriber.NewAsyncServer(userRepo), watermillServer.Router, watermillServer.Subscriber); err != nil {
+		return err
+	}
+
+	app, err := service.NewApplication(userRepo, taskRepo)
 	if err != nil {
 		return err
 	}

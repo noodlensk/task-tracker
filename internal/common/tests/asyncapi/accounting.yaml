@@ -4,59 +4,27 @@ info:
   version: 1.0.0
   description: TODO
 channels:
-  users.created:
-    publish:
-      message:
-        $ref: '../../../../api/asyncapi/users.yaml#/components/messages/userCreated'
-    subscribe:
-      message:
-        $ref: '../../../../api/asyncapi/users.yaml#/components/messages/userCreated'
-  users.updated:
-    publish:
-      message:
-        $ref: '../../../../api/asyncapi/users.yaml#/components/messages/userUpdated'
-    subscribe:
-      message:
-        $ref: '../../../../api/asyncapi/users.yaml#/components/messages/userUpdated'
   tasks.assigned:
     publish:
       message:
-        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskAssigned"
-    subscribe:
-      message:
-        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskAssigned"
+        $ref: '../../../../api/asyncapi/tasks/messages/task-assigned.yaml'
   tasks.created:
     publish:
       message:
-        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskCreated"
-    subscribe:
-      message:
-        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskCreated"
+        $ref: '../../../../api/asyncapi/tasks/messages/task-created.yaml'
   tasks.completed:
     publish:
       message:
-        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskCompleted"
-    subscribe:
-      message:
-        $ref: "../../../../api/asyncapi/tasks.yaml#/components/messages/taskCompleted"
+        $ref: '../../../../api/asyncapi/tasks/messages/task-completed.yaml'
   accounting.task_estimated:
-    publish:
-      message:
-        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/taskEstimated"
     subscribe:
       message:
-        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/taskEstimated"
+        $ref: '../../../../api/asyncapi/accounting/messages/task-estimated.yaml'
   accounting.user_charged:
-    publish:
-      message:
-        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/userCharged"
     subscribe:
       message:
-        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/userCharged"
+        $ref: '../../../../api/asyncapi/accounting/messages/user-charged.yaml'
   accounting.user_payed:
-    publish:
-      message:
-        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/userPayed"
     subscribe:
       message:
-        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/userPayed"
+        $ref: '../../../../api/asyncapi/accounting/messages/user-payed.yaml'

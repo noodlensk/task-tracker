@@ -1,0 +1,10 @@
+name: TaskEstimated
+payload:
+  type: object
+  properties:
+    id:
+      type: string
+    assignedPrice:
+      type: number
+    competedPrice:
+      type: number

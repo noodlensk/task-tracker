@@ -1,0 +1,25 @@
+asyncapi: 2.4.0
+info:
+  title: Tasks
+  version: 1.0.0
+  description: TODO
+channels:
+  tasks.reassign:
+    publish:
+      message:
+        $ref: 'messages/re-assign-tasks.yaml'
+    subscribe:
+      message:
+        $ref: 'messages/re-assign-tasks.yaml'
+  tasks.assigned:
+    publish:
+      message:
+        $ref: 'messages/task-assigned.yaml'
+  tasks.created:
+    publish:
+      message:
+        $ref: 'messages/task-created.yaml'
+  tasks.completed:
+    publish:
+      message:
+        $ref: 'messages/task-completed.yaml'

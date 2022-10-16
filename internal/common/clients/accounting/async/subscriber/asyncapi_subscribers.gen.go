@@ -15,41 +15,6 @@ func Register(application ServerInterface, router *message.Router, subscriber me
 	asyncServer := ServerInterfaceWrapper{app: application}
 
 	router.AddNoPublisherHandler(
-		"users.created",
-		"users.created",
-		subscriber,
-		asyncServer.UserCreated,
-	)
-
-	router.AddNoPublisherHandler(
-		"users.updated",
-		"users.updated",
-		subscriber,
-		asyncServer.UserUpdated,
-	)
-
-	router.AddNoPublisherHandler(
-		"tasks.assigned",
-		"tasks.assigned",
-		subscriber,
-		asyncServer.TaskAssigned,
-	)
-
-	router.AddNoPublisherHandler(
-		"tasks.created",
-		"tasks.created",
-		subscriber,
-		asyncServer.TaskCreated,
-	)
-
-	router.AddNoPublisherHandler(
-		"tasks.completed",
-		"tasks.completed",
-		subscriber,
-		asyncServer.TaskCompleted,
-	)
-
-	router.AddNoPublisherHandler(
 		"accounting.task_estimated",
 		"accounting.task_estimated",
 		subscriber,
@@ -74,16 +39,6 @@ func Register(application ServerInterface, router *message.Router, subscriber me
 }
 
 type ServerInterface interface {
-	UserCreated(ctx context.Context, e UserCreated) error
-
-	UserUpdated(ctx context.Context, e UserUpdated) error
-
-	TaskAssigned(ctx context.Context, e TaskAssigned) error
-
-	TaskCreated(ctx context.Context, e TaskCreated) error
-
-	TaskCompleted(ctx context.Context, e TaskCompleted) error
-
 	TaskEstimated(ctx context.Context, e TaskEstimated) error
 
 	UserCharged(ctx context.Context, e UserCharged) error
@@ -93,61 +48,6 @@ type ServerInterface interface {
 
 type ServerInterfaceWrapper struct {
 	app ServerInterface
-}
-
-func (s ServerInterfaceWrapper) UserCreated(msg *message.Message) error {
-	event := &UserCreated{}
-
-	err := json.Unmarshal(msg.Payload, &event)
-	if err != nil {
-		return errors.Wrap(err, "parse event")
-	}
-
-	return s.app.UserCreated(msg.Context(), *event)
-}
-
-func (s ServerInterfaceWrapper) UserUpdated(msg *message.Message) error {
-	event := &UserUpdated{}
-
-	err := json.Unmarshal(msg.Payload, &event)
-	if err != nil {
-		return errors.Wrap(err, "parse event")
-	}
-
-	return s.app.UserUpdated(msg.Context(), *event)
-}
-
-func (s ServerInterfaceWrapper) TaskAssigned(msg *message.Message) error {
-	event := &TaskAssigned{}
-
-	err := json.Unmarshal(msg.Payload, &event)
-	if err != nil {
-		return errors.Wrap(err, "parse event")
-	}
-
-	return s.app.TaskAssigned(msg.Context(), *event)
-}
-
-func (s ServerInterfaceWrapper) TaskCreated(msg *message.Message) error {
-	event := &TaskCreated{}
-
-	err := json.Unmarshal(msg.Payload, &event)
-	if err != nil {
-		return errors.Wrap(err, "parse event")
-	}
-
-	return s.app.TaskCreated(msg.Context(), *event)
-}
-
-func (s ServerInterfaceWrapper) TaskCompleted(msg *message.Message) error {
-	event := &TaskCompleted{}
-
-	err := json.Unmarshal(msg.Payload, &event)
-	if err != nil {
-		return errors.Wrap(err, "parse event")
-	}
-
-	return s.app.TaskCompleted(msg.Context(), *event)
 }
 
 func (s ServerInterfaceWrapper) TaskEstimated(msg *message.Message) error {

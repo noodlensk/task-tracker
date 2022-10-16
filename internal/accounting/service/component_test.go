@@ -9,8 +9,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
+	"github.com/noodlensk/task-tracker/internal/accounting/adapters"
+	"github.com/noodlensk/task-tracker/internal/accounting/data/subscriber"
 	"github.com/noodlensk/task-tracker/internal/accounting/ports/async"
 	accountingAsyncPublisherClient "github.com/noodlensk/task-tracker/internal/common/clients/accounting/async/publisher"
+	accountingCUDClient "github.com/noodlensk/task-tracker/internal/common/clients/accounting/cud/publisher"
 	"github.com/noodlensk/task-tracker/internal/common/tests"
 )
 
@@ -20,25 +23,28 @@ func TestEstimateTask(t *testing.T) {
 	ctx := context.Background()
 
 	asyncPublisher := tests.NewAccountingAsyncPublisher(t)
+	cudPublisher := tests.NewAccountingCUDPublisher(t)
 	asyncSubscriber := tests.NewAccountingAsyncSubscriber(t)
 
-	userToCreate := accountingAsyncPublisherClient.UserCreated{
-		Id:    "myUID",
+	userToCreate := accountingCUDClient.UserCreated{
+		Id:    uuid.New().String(),
 		Name:  "Dmitry",
 		Email: "some@email.com",
 		Role:  "basic",
 	}
 
-	asyncPublisher.UserCreated(t, userToCreate)
+	cudPublisher.CreateUser(t, userToCreate)
 
-	taskToCreate := accountingAsyncPublisherClient.TaskCreated{
-		Id:          "myUID",
+	taskToCreate := accountingCUDClient.TaskCreated{
+		Id:          uuid.New().String(),
 		Title:       "myTitle",
 		Description: "",
 		AssignedTo:  userToCreate.Id,
 	}
 
-	asyncPublisher.TaskCreated(t, taskToCreate)
+	cudPublisher.CreateTask(t, taskToCreate)
+
+	asyncPublisher.TaskCreated(t, accountingAsyncPublisherClient.TaskCreated{PublicId: taskToCreate.Id})
 
 	estimatedTask, err := asyncSubscriber.WaitForTaskEstimated(ctx)
 	require.NoError(t, err)
@@ -53,30 +59,30 @@ func TestChargeForAssignedTask(t *testing.T) {
 	ctx := context.Background()
 
 	asyncPublisher := tests.NewAccountingAsyncPublisher(t)
+	cudPublisher := tests.NewAccountingCUDPublisher(t)
 	asyncSubscriber := tests.NewAccountingAsyncSubscriber(t)
 
-	userToCreate := accountingAsyncPublisherClient.UserCreated{
+	userToCreate := accountingCUDClient.UserCreated{
 		Id:    uuid.New().String(),
 		Name:  "Dmitry",
 		Email: "some@email.com",
 		Role:  "basic",
 	}
 
-	asyncPublisher.UserCreated(t, userToCreate)
+	cudPublisher.CreateUser(t, userToCreate)
 
-	taskToCreate := accountingAsyncPublisherClient.TaskCreated{
+	taskToCreate := accountingCUDClient.TaskCreated{
 		Id:          uuid.New().String(),
 		Title:       "myTitle",
 		Description: "my description",
 		AssignedTo:  userToCreate.Id,
 	}
 
-	asyncPublisher.TaskCreated(t, taskToCreate)
+	cudPublisher.CreateTask(t, taskToCreate)
+
 	asyncPublisher.TaskAssigned(t, accountingAsyncPublisherClient.TaskAssigned{
-		Id:          taskToCreate.Id,
-		Title:       taskToCreate.Title,
-		Description: taskToCreate.Description,
-		AssignedTo:  taskToCreate.AssignedTo,
+		PublicId: taskToCreate.Id,
+		UserId:   taskToCreate.AssignedTo,
 	})
 
 	userCharged, err := asyncSubscriber.WaitForUserCharged(ctx)
@@ -91,31 +97,27 @@ func TestPayForFinishedTask(t *testing.T) {
 	ctx := context.Background()
 
 	asyncPublisher := tests.NewAccountingAsyncPublisher(t)
+	cudPublisher := tests.NewAccountingCUDPublisher(t)
 	asyncSubscriber := tests.NewAccountingAsyncSubscriber(t)
 
-	userToCreate := accountingAsyncPublisherClient.UserCreated{
+	userToCreate := accountingCUDClient.UserCreated{
 		Id:    uuid.New().String(),
 		Name:  "Dmitry",
 		Email: "some@email.com",
 		Role:  "basic",
 	}
 
-	asyncPublisher.UserCreated(t, userToCreate)
+	cudPublisher.CreateUser(t, userToCreate)
 
-	taskToCreate := accountingAsyncPublisherClient.TaskCreated{
+	taskToCreate := accountingCUDClient.TaskCreated{
 		Id:          uuid.New().String(),
 		Title:       "myTitle",
 		Description: "",
 		AssignedTo:  userToCreate.Id,
 	}
 
-	asyncPublisher.TaskCreated(t, taskToCreate)
-	asyncPublisher.TaskCompleted(t, accountingAsyncPublisherClient.TaskCompleted{
-		Id:          taskToCreate.Id,
-		Title:       taskToCreate.Title,
-		Description: taskToCreate.Description,
-		AssignedTo:  taskToCreate.AssignedTo,
-	})
+	cudPublisher.CreateTask(t, taskToCreate)
+	asyncPublisher.TaskCompleted(t, accountingAsyncPublisherClient.TaskCompleted{PublicId: taskToCreate.Id})
 
 	userCharged, err := asyncSubscriber.WaitForUserPayed(ctx, userToCreate.Id)
 	require.NoError(t, err)
@@ -124,7 +126,10 @@ func TestPayForFinishedTask(t *testing.T) {
 }
 
 func startService() error {
-	app := NewComponentTestApplication()
+	usersRepo := adapters.NewUserInMemoryRepository()
+	taskRepo := adapters.NewTaskInMemoryRepository()
+
+	app := NewComponentTestApplication(usersRepo, taskRepo)
 	ctx := context.Background()
 
 	asyncServer, err := tests.NewAsyncSubscriber()
@@ -136,6 +141,9 @@ func startService() error {
 		return err
 	}
 
+	if err := subscriber.Register(subscriber.NewAsyncServer(taskRepo, usersRepo), asyncServer.Router, asyncServer.Subscriber); err != nil {
+		return err
+	}
 	go func() {
 		err := asyncServer.Start(ctx) // TODO: wait for start
 		if err != nil {

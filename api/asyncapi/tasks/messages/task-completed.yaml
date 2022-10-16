@@ -1,0 +1,6 @@
+name: TaskCompleted
+payload:
+  type: object
+  properties:
+    public_id:
+      type: string

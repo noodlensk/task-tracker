@@ -35,20 +35,6 @@ func Register(application ServerInterface, router *message.Router, subscriber me
 		asyncServer.TaskCompleted,
 	)
 
-	router.AddNoPublisherHandler(
-		"users.created",
-		"users.created",
-		subscriber,
-		asyncServer.UserCreated,
-	)
-
-	router.AddNoPublisherHandler(
-		"users.updated",
-		"users.updated",
-		subscriber,
-		asyncServer.UserUpdated,
-	)
-
 	return nil
 }
 
@@ -58,10 +44,6 @@ type ServerInterface interface {
 	TaskCreated(ctx context.Context, e TaskCreated) error
 
 	TaskCompleted(ctx context.Context, e TaskCompleted) error
-
-	UserCreated(ctx context.Context, e UserCreated) error
-
-	UserUpdated(ctx context.Context, e UserUpdated) error
 }
 
 type ServerInterfaceWrapper struct {
@@ -99,26 +81,4 @@ func (s ServerInterfaceWrapper) TaskCompleted(msg *message.Message) error {
 	}
 
 	return s.app.TaskCompleted(msg.Context(), *event)
-}
-
-func (s ServerInterfaceWrapper) UserCreated(msg *message.Message) error {
-	event := &UserCreated{}
-
-	err := json.Unmarshal(msg.Payload, &event)
-	if err != nil {
-		return errors.Wrap(err, "parse event")
-	}
-
-	return s.app.UserCreated(msg.Context(), *event)
-}
-
-func (s ServerInterfaceWrapper) UserUpdated(msg *message.Message) error {
-	event := &UserUpdated{}
-
-	err := json.Unmarshal(msg.Payload, &event)
-	if err != nil {
-		return errors.Wrap(err, "parse event")
-	}
-
-	return s.app.UserUpdated(msg.Context(), *event)
 }

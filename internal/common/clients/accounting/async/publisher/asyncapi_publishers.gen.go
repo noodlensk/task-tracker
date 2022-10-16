@@ -22,24 +22,6 @@ type PublisherClient struct {
 	publisher message.Publisher
 }
 
-func (c PublisherClient) UserCreated(ctx context.Context, e UserCreated) error {
-	data, err := json.Marshal(e)
-	if err != nil {
-		return errors.Wrap(err, "marshal data")
-	}
-
-	return c.publisher.Publish("users.created", message.NewMessage(watermill.NewShortUUID(), data))
-}
-
-func (c PublisherClient) UserUpdated(ctx context.Context, e UserUpdated) error {
-	data, err := json.Marshal(e)
-	if err != nil {
-		return errors.Wrap(err, "marshal data")
-	}
-
-	return c.publisher.Publish("users.updated", message.NewMessage(watermill.NewShortUUID(), data))
-}
-
 func (c PublisherClient) TaskAssigned(ctx context.Context, e TaskAssigned) error {
 	data, err := json.Marshal(e)
 	if err != nil {
@@ -65,31 +47,4 @@ func (c PublisherClient) TaskCompleted(ctx context.Context, e TaskCompleted) err
 	}
 
 	return c.publisher.Publish("tasks.completed", message.NewMessage(watermill.NewShortUUID(), data))
-}
-
-func (c PublisherClient) TaskEstimated(ctx context.Context, e TaskEstimated) error {
-	data, err := json.Marshal(e)
-	if err != nil {
-		return errors.Wrap(err, "marshal data")
-	}
-
-	return c.publisher.Publish("accounting.task_estimated", message.NewMessage(watermill.NewShortUUID(), data))
-}
-
-func (c PublisherClient) UserCharged(ctx context.Context, e UserCharged) error {
-	data, err := json.Marshal(e)
-	if err != nil {
-		return errors.Wrap(err, "marshal data")
-	}
-
-	return c.publisher.Publish("accounting.user_charged", message.NewMessage(watermill.NewShortUUID(), data))
-}
-
-func (c PublisherClient) UserPayed(ctx context.Context, e UserPayed) error {
-	data, err := json.Marshal(e)
-	if err != nil {
-		return errors.Wrap(err, "marshal data")
-	}
-
-	return c.publisher.Publish("accounting.user_payed", message.NewMessage(watermill.NewShortUUID(), data))
 }

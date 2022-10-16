@@ -1,0 +1,20 @@
+type: object
+required: [ id, role ]
+properties:
+  id:
+    type: string
+  name:
+    type: string
+  email:
+    type: string
+  password:
+    type: string
+  role:
+    type: string
+    enum: [ "admin", "manager", "basic" ]
+  created_at:
+    type: string
+    format: date-time
+  modified_at:
+    type: string
+    format: date-time

@@ -1,0 +1,3 @@
+name: UserCreated
+payload:
+  $ref: "payloads/user.yaml"

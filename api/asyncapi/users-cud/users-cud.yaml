@@ -1,0 +1,15 @@
+asyncapi: 2.4.0
+info:
+  title: Users
+  version: 1.0.0
+  description: TODO
+channels:
+  users-cud.created:
+    publish:
+      message:
+        $ref: 'messages/user-created.yaml'
+  users-cud.updated:
+    publish:
+      message:
+        $ref: 'messages/user-updated.yaml'
+
