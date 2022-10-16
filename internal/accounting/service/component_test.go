@@ -2,11 +2,12 @@ package service
 
 import (
 	"context"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/require"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
 
 	"github.com/noodlensk/task-tracker/internal/accounting/adapters"
 	"github.com/noodlensk/task-tracker/internal/accounting/data/subscriber"

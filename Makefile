@@ -27,6 +27,8 @@ asyncapi: ## Build stubs from asyncapi spec
 	ag api/asyncapi/accounting-cud/accounting-cud.yaml ./tools/async-api-watermill-template -o internal/accounting/data/subscriber -p moduleName=subscriber -p mode=server --force-write
 	ag api/asyncapi/accounting-cud/accounting-cud.yaml ./tools/async-api-watermill-template -o internal/accounting/data/publisher -p moduleName=publisher -p mode=client --force-write
 
+	ag api/asyncapi/analytics-cud/analytics-cud.yaml ./tools/async-api-watermill-template -o internal/analytics/data/subscriber -p moduleName=subscriber -p mode=server --force-write
+
 	ag internal/common/tests/asyncapi/accounting.yaml ./tools/async-api-watermill-template -o internal/common/clients/accounting/async/publisher -p moduleName=publisher -p mode=client --force-write
 	ag internal/common/tests/asyncapi/accounting.yaml ./tools/async-api-watermill-template -o internal/common/clients/accounting/async/subscriber -p moduleName=subscriber -p mode=server --force-write
 	ag internal/common/tests/asyncapi/accounting-cud.yaml ./tools/async-api-watermill-template -o internal/common/clients/accounting/cud/publisher -p moduleName=publisher -p mode=client --force-write
@@ -37,19 +39,23 @@ lint: ## Lint
 	cd internal/users && golangci-lint run
 	cd internal/tasks && golangci-lint run
 	cd internal/accounting && golangci-lint run
+	cd internal/analytics && golangci-lint run
 test: ## Run tests
 	cd internal/common && go test -count=1 -p=8 -parallel=8 -race ./...
 	cd internal/users && go test -count=1 -p=8 -parallel=8 -race ./...
 	cd internal/accounting && go test -count=1 -p=8 -parallel=8 -race ./...
+	cd internal/analytics && go test -count=1 -p=8 -parallel=8 -race ./...
 dep: ## Get all dependencies
 	cd internal/common && go mod download && go mod tidy
 	cd internal/tasks && go mod download && go mod tidy
 	cd internal/users && go mod download && go mod tidy
 	cd internal/accounting && go mod download && go mod tidy
+	cd internal/analytics && go mod download && go mod tidy
 build: ## Build all projects
 	cd internal/tasks && go build
 	cd internal/users && go build
 	cd internal/accounting && go build
+	cd internal/analytics && go build
 start-env: ## Start the local env
 	docker-compose up -d
 

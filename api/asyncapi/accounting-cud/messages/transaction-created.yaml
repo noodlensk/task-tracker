@@ -1,0 +1,12 @@
+name: TransactionCreated
+payload:
+  type: object
+  properties:
+    uid:
+      type: string
+    user_uid:
+      type: string
+    amount:
+      type: number
+    reason:
+      type: string

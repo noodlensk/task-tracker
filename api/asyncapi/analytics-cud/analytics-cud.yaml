@@ -1,18 +1,10 @@
 asyncapi: 2.4.0
 info:
-  title: Accounting CUD
+  title: Analytics CUD
   version: 1.0.0
   description: TODO
 defaultContentType: application/json
 channels:
-  tasks-cud.created:
-    subscribe:
-      message:
-        $ref: "../tasks-cud/messages/task-created.yaml"
-  tasks-cud.update:
-    subscribe:
-      message:
-        $ref: "../tasks-cud/messages/task-updated.yaml"
   users-cud.created:
     subscribe:
       message:
@@ -22,6 +14,6 @@ channels:
       message:
         $ref: '../users-cud/messages/user-updated.yaml'
   accounting-cud.transaction.created:
-    publish:
+    subscribe:
       message:
-        $ref: 'messages/transaction-created.yaml'
+        $ref: '../accounting-cud/messages/transaction-created.yaml'

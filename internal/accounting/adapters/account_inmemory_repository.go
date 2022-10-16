@@ -5,11 +5,14 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/noodlensk/task-tracker/internal/accounting/data/publisher"
 	"github.com/noodlensk/task-tracker/internal/accounting/domain/account"
 )
 
 type AccountInMemoryRepository struct {
 	accounts map[string]*account.Account
+
+	publisher *publisher.PublisherClient
 
 	lock sync.RWMutex
 }
@@ -73,11 +76,14 @@ func (r *AccountInMemoryRepository) Update(ctx context.Context, uid string, upda
 
 	r.accounts[uid] = newVal
 
+	// TODO: handle new transactions with publisher
+
 	return nil
 }
 
-func NewAccountInMemoryRepository() *AccountInMemoryRepository {
+func NewAccountInMemoryRepository(pub *publisher.PublisherClient) *AccountInMemoryRepository {
 	return &AccountInMemoryRepository{
-		accounts: map[string]*account.Account{},
+		accounts:  map[string]*account.Account{},
+		publisher: pub,
 	}
 }

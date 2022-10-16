@@ -7,6 +7,7 @@ import (
 	"github.com/noodlensk/task-tracker/internal/accounting/adapters"
 	"github.com/noodlensk/task-tracker/internal/accounting/app"
 	"github.com/noodlensk/task-tracker/internal/accounting/app/command"
+	"github.com/noodlensk/task-tracker/internal/accounting/data/publisher"
 	"github.com/noodlensk/task-tracker/internal/accounting/domain/account"
 	"github.com/noodlensk/task-tracker/internal/accounting/domain/task"
 	"github.com/noodlensk/task-tracker/internal/accounting/domain/user"
@@ -14,9 +15,9 @@ import (
 	"github.com/noodlensk/task-tracker/internal/common/tests"
 )
 
-func NewApplication(usersRepo user.Repository, tasksRepo task.Repository, publisher message.Publisher, logger *zap.SugaredLogger) (*app.Application, error) {
-	accountRepo := adapters.NewAccountInMemoryRepository()
-	eventPublisher := adapters.NewAsyncEventPublisher(publisher, logger.With("component", "event-publisher"))
+func NewApplication(usersRepo user.Repository, tasksRepo task.Repository, pub message.Publisher, logger *zap.SugaredLogger) (*app.Application, error) {
+	accountRepo := adapters.NewAccountInMemoryRepository(publisher.NewPublisherClient(pub))
+	eventPublisher := adapters.NewAsyncEventPublisher(pub, logger.With("component", "event-publisher"))
 
 	return newApplication(usersRepo, tasksRepo, accountRepo, eventPublisher), nil
 }
@@ -27,7 +28,7 @@ func NewComponentTestApplication(usersRepo user.Repository, tasksRepo task.Repos
 		panic(err)
 	}
 
-	accountRepo := adapters.NewAccountInMemoryRepository()
+	accountRepo := adapters.NewAccountInMemoryRepository(publisher.NewPublisherClient(pub))
 	eventPublisher := adapters.NewAsyncEventPublisher(pub, logs.NewLogger()) // TODO: replace with nop logger
 
 	return newApplication(usersRepo, tasksRepo, accountRepo, eventPublisher)
