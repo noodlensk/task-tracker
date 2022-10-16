@@ -50,7 +50,13 @@ func (l watermillLogger) Debug(msg string, fields watermill.LogFields) {
 }
 
 func (l watermillLogger) Trace(msg string, fields watermill.LogFields) {
-	// not supported
+	var logFields []interface{}
+
+	for k, v := range fields {
+		logFields = append(logFields, k, v)
+	}
+
+	l.logger.Infow(msg, logFields...)
 }
 
 func (l watermillLogger) With(fields watermill.LogFields) watermill.LoggerAdapter {

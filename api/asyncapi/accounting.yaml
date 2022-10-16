@@ -28,12 +28,28 @@ channels:
     publish:
       message:
         $ref: '#/components/messages/taskEstimated'
+  accounting.user_charged:
+    publish:
+      message:
+        $ref: '#/components/messages/userCharged'
+  accounting.user_payed:
+    publish:
+      message:
+        $ref: '#/components/messages/userPayed'
 components:
   messages:
     taskEstimated:
       name: TaskEstimated
       payload:
         $ref: "#/components/schemas/taskEstimated"
+    userCharged:
+      name: UserCharged
+      payload:
+        $ref: "#/components/schemas/userCharged"
+    userPayed:
+      name: UserPayed
+      payload:
+        $ref: "#/components/schemas/userPayed"
   schemas:
     taskEstimated:
       type: object
@@ -44,6 +60,28 @@ components:
           type: number
         competedPrice:
           type: number
+        sentAt:
+          $ref: "#/components/schemas/sentAt"
+    userCharged:
+      type: object
+      properties:
+        user_uid:
+          type: string
+        amount:
+          type: number
+        reason:
+          type: string
+        sentAt:
+          $ref: "#/components/schemas/sentAt"
+    userPayed:
+      type: object
+      properties:
+        user_uid:
+          type: string
+        amount:
+          type: number
+        reason:
+          type: string
         sentAt:
           $ref: "#/components/schemas/sentAt"
     sentAt:

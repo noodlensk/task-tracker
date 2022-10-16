@@ -58,7 +58,12 @@ func (r *AccountInMemoryRepository) Update(ctx context.Context, uid string, upda
 
 	v, ok := r.accounts[uid]
 	if !ok {
-		return errors.New("not found")
+		var err error
+
+		v, err = account.New(uid)
+		if err != nil {
+			return err
+		}
 	}
 
 	newVal, err := updateFn(ctx, v)

@@ -51,7 +51,7 @@ func TestCreateTask(t *testing.T) {
 	var taskCreated *tasksHTTPClient.Task
 
 	for _, task := range taskList {
-		if task.Title == taskToCreate.Title { //TODO: return UID of created task
+		if task.Title == taskToCreate.Title { // TODO: return UID of created task
 			taskCreated = &task
 
 			break

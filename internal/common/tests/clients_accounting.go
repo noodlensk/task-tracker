@@ -34,12 +34,32 @@ func (c AccountingAsyncClient) UserCreated(t *testing.T, u accountingAsyncPublis
 	require.NoError(t, err)
 }
 
+func (c AccountingAsyncClient) TaskAssigned(t *testing.T, task accountingAsyncPublisherClient.TaskAssigned) {
+	t.Helper()
+
+	ctx := context.Background()
+
+	err := c.client.TaskAssigned(ctx, task)
+
+	require.NoError(t, err)
+}
+
 func (c AccountingAsyncClient) TaskCreated(t *testing.T, task accountingAsyncPublisherClient.TaskCreated) {
 	t.Helper()
 
 	ctx := context.Background()
 
 	err := c.client.TaskCreated(ctx, task)
+
+	require.NoError(t, err)
+}
+
+func (c AccountingAsyncClient) TaskCompleted(t *testing.T, task accountingAsyncPublisherClient.TaskCompleted) {
+	t.Helper()
+
+	ctx := context.Background()
+
+	err := c.client.TaskCompleted(ctx, task)
 
 	require.NoError(t, err)
 }

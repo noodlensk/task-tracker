@@ -10,14 +10,14 @@ type TaskCreated struct {
 	Task task.Task
 }
 
-type TaskCreatedHandler struct {
+type TaskCreatedEventHandler struct {
 	taskRepo task.Repository
 }
 
-func NewTaskCreatedHandler(taskRepo task.Repository) TaskCreatedHandler {
-	return TaskCreatedHandler{taskRepo: taskRepo}
+func NewTaskCreatedEventHandler(taskRepo task.Repository) TaskCreatedEventHandler {
+	return TaskCreatedEventHandler{taskRepo: taskRepo}
 }
 
-func (h *TaskCreatedHandler) Handle(ctx context.Context, cmd TaskCreated) error {
+func (h *TaskCreatedEventHandler) Handle(ctx context.Context, cmd TaskCreated) error {
 	return h.taskRepo.Create(ctx, &cmd.Task)
 }

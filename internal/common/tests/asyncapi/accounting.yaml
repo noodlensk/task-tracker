@@ -46,3 +46,17 @@ channels:
     subscribe:
       message:
         $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/taskEstimated"
+  accounting.user_charged:
+    publish:
+      message:
+        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/userCharged"
+    subscribe:
+      message:
+        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/userCharged"
+  accounting.user_payed:
+    publish:
+      message:
+        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/userPayed"
+    subscribe:
+      message:
+        $ref: "../../../../api/asyncapi/accounting.yaml#/components/messages/userPayed"

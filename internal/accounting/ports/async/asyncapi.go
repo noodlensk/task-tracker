@@ -34,8 +34,7 @@ func (s Server) UserCreated(ctx context.Context, e UserCreated) error {
 }
 
 func (s Server) UserUpdated(ctx context.Context, e UserUpdated) error {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (s Server) TaskAssigned(ctx context.Context, e TaskAssigned) error {

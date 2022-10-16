@@ -2,20 +2,41 @@ package adapters
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"go.uber.org/zap"
 
 	"github.com/noodlensk/task-tracker/internal/accounting/app/command"
 )
 
 type AsyncEventPublisher struct {
 	client *PublisherClient
+	logger *zap.SugaredLogger
+}
+
+func (a AsyncEventPublisher) UserChargedForAssignedTask(ctx context.Context, e command.ChargedForAssignedTask) {
+	err := a.client.UserCharged(ctx, UserCharged{
+		UserUid: e.UserUID,
+		Reason:  "", // TODO: fix this
+		Amount:  e.Amount,
+		SentAt:  time.Now(),
+	})
+	if err != nil {
+		a.logger.Errorw("Failed to publish event", "err", err)
+	}
 }
 
 func (a AsyncEventPublisher) PayedForFinishedTask(ctx context.Context, e command.PayedForFinishedTask) {
-	// TODO: handle
+	err := a.client.UserPayed(ctx, UserPayed{
+		UserUid: e.UserUID,
+		Reason:  "", // TODO: fix this
+		Amount:  e.Amount,
+		SentAt:  time.Now(),
+	})
+	if err != nil {
+		a.logger.Errorw("Failed to publish event", "err", err)
+	}
 }
 
 func (a AsyncEventPublisher) TaskPriceEstimated(ctx context.Context, e command.TaskPriceEstimated) {
@@ -25,14 +46,14 @@ func (a AsyncEventPublisher) TaskPriceEstimated(ctx context.Context, e command.T
 		CompetedPrice: e.PriceFinished,
 		SentAt:        time.Now(),
 	})
-
 	if err != nil {
-		fmt.Println(err) // TODO: fix this
+		a.logger.Errorw("Failed to publish event", "err", err)
 	}
 }
 
-func NewAsyncEventPublisher(pub message.Publisher) *AsyncEventPublisher {
+func NewAsyncEventPublisher(pub message.Publisher, logger *zap.SugaredLogger) *AsyncEventPublisher {
 	return &AsyncEventPublisher{
 		client: NewPublisherClient(pub),
+		logger: logger,
 	}
 }

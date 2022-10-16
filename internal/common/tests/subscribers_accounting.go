@@ -11,6 +11,20 @@ import (
 
 type AccountingAsyncSubscriber struct {
 	taskEstimatedCh chan subscriber.TaskEstimated
+	userChargedCh   chan subscriber.UserCharged
+	userPayedCh     chan subscriber.UserPayed
+}
+
+func (a AccountingAsyncSubscriber) UserCharged(ctx context.Context, e subscriber.UserCharged) error {
+	a.userChargedCh <- e
+
+	return nil
+}
+
+func (a AccountingAsyncSubscriber) UserPayed(ctx context.Context, e subscriber.UserPayed) error {
+	a.userPayedCh <- e
+
+	return nil
 }
 
 func (a AccountingAsyncSubscriber) TaskEstimated(ctx context.Context, e subscriber.TaskEstimated) error {
@@ -26,6 +40,30 @@ func (a AccountingAsyncSubscriber) WaitForTaskEstimated(ctx context.Context) (*s
 			return nil, ctx.Err()
 		case e := <-a.taskEstimatedCh:
 			return &e, nil
+		}
+	}
+}
+
+func (a AccountingAsyncSubscriber) WaitForUserCharged(ctx context.Context) (*subscriber.UserCharged, error) {
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case e := <-a.userChargedCh:
+			return &e, nil
+		}
+	}
+}
+
+func (a AccountingAsyncSubscriber) WaitForUserPayed(ctx context.Context, userUID string) (*subscriber.UserPayed, error) {
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case e := <-a.userPayedCh:
+			if e.UserUid == userUID {
+				return &e, nil
+			}
 		}
 	}
 }
@@ -58,6 +96,8 @@ func NewAccountingAsyncSubscriber(t *testing.T) *AccountingAsyncSubscriber {
 
 	client := &AccountingAsyncSubscriber{
 		taskEstimatedCh: make(chan subscriber.TaskEstimated),
+		userPayedCh:     make(chan subscriber.UserPayed),
+		userChargedCh:   make(chan subscriber.UserCharged),
 	}
 
 	require.NoError(t, subscriber.Register(client, srv.Router, srv.Subscriber))

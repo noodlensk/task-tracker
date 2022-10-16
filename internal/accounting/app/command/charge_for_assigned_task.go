@@ -19,12 +19,18 @@ type ChargedForAssignedTask struct {
 	Amount  float32
 }
 
+type ChargeForAssignedTaskEventPublisher interface {
+	UserChargedForAssignedTask(ctx context.Context, e ChargedForAssignedTask)
+}
+
 type ChargeForAssignedTaskHandler struct {
 	taskRepo       task.Repository
 	accountRepo    account.Repository
-	eventPublisher interface {
-		UserChargedForAssignedTask(ctx context.Context, e ChargedForAssignedTask)
-	}
+	eventPublisher ChargeForAssignedTaskEventPublisher
+}
+
+func NewChargeForAssignedTaskHandler(taskRepo task.Repository, accountRepo account.Repository, eventPublisher ChargeForAssignedTaskEventPublisher) ChargeForAssignedTaskHandler {
+	return ChargeForAssignedTaskHandler{taskRepo: taskRepo, accountRepo: accountRepo, eventPublisher: eventPublisher}
 }
 
 func (h ChargeForAssignedTaskHandler) Handle(ctx context.Context, cmd ChargeForAssignedTask) error {

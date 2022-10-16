@@ -64,3 +64,15 @@ type TaskEstimated struct {
 	CompetedPrice float32   `json:"competedPrice"`
 	SentAt        time.Time `json:"sentAt"`
 }
+type UserCharged struct {
+	UserUid string    `json:"user_uid"`
+	Amount  float32   `json:"amount"`
+	Reason  string    `json:"reason"`
+	SentAt  time.Time `json:"sentAt"`
+}
+type UserPayed struct {
+	UserUid string    `json:"user_uid"`
+	Amount  float32   `json:"amount"`
+	Reason  string    `json:"reason"`
+	SentAt  time.Time `json:"sentAt"`
+}

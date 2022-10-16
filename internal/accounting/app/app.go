@@ -18,8 +18,10 @@ type Commands struct {
 }
 
 type CUDEvents struct {
-	TaskCreated cud.TaskCreatedHandler
-	TaskUpdated cud.TaskUpdatedHandler
+	TaskCreated cud.TaskCreatedEventHandler
+	TaskUpdated cud.TaskUpdatedEventHandler
+	UserCreated cud.UserCreatedEventHandler
+	UserUpdated cud.UserUpdatedEventHandler
 }
 
 type Queries struct{}

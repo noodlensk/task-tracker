@@ -1,6 +1,7 @@
 package account
 
 import (
+	"errors"
 	"fmt"
 	"time"
 )
@@ -40,6 +41,17 @@ func (a *Account) AddTransaction(t *Transaction) error {
 	a.balance -= t.credit
 
 	return nil
+}
+
+func New(userUID string) (*Account, error) {
+	if userUID == "" {
+		return nil, errors.New("empty user uid")
+	}
+
+	return &Account{
+		userUID: userUID,
+		balance: 0,
+	}, nil
 }
 
 func (a *Account) CloseBillingCycle() error {

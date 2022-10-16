@@ -56,6 +56,20 @@ func Register(application ServerInterface, router *message.Router, subscriber me
 		asyncServer.TaskEstimated,
 	)
 
+	router.AddNoPublisherHandler(
+		"accounting.user_charged",
+		"accounting.user_charged",
+		subscriber,
+		asyncServer.UserCharged,
+	)
+
+	router.AddNoPublisherHandler(
+		"accounting.user_payed",
+		"accounting.user_payed",
+		subscriber,
+		asyncServer.UserPayed,
+	)
+
 	return nil
 }
 
@@ -71,6 +85,10 @@ type ServerInterface interface {
 	TaskCompleted(ctx context.Context, e TaskCompleted) error
 
 	TaskEstimated(ctx context.Context, e TaskEstimated) error
+
+	UserCharged(ctx context.Context, e UserCharged) error
+
+	UserPayed(ctx context.Context, e UserPayed) error
 }
 
 type ServerInterfaceWrapper struct {
@@ -141,4 +159,26 @@ func (s ServerInterfaceWrapper) TaskEstimated(msg *message.Message) error {
 	}
 
 	return s.app.TaskEstimated(msg.Context(), *event)
+}
+
+func (s ServerInterfaceWrapper) UserCharged(msg *message.Message) error {
+	event := &UserCharged{}
+
+	err := json.Unmarshal(msg.Payload, &event)
+	if err != nil {
+		return errors.Wrap(err, "parse event")
+	}
+
+	return s.app.UserCharged(msg.Context(), *event)
+}
+
+func (s ServerInterfaceWrapper) UserPayed(msg *message.Message) error {
+	event := &UserPayed{}
+
+	err := json.Unmarshal(msg.Payload, &event)
+	if err != nil {
+		return errors.Wrap(err, "parse event")
+	}
+
+	return s.app.UserPayed(msg.Context(), *event)
 }

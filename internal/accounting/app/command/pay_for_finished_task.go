@@ -61,5 +61,11 @@ func (h *PayForFinishedTaskHandler) Handle(ctx context.Context, cmd PayForFinish
 		return err
 	}
 
+	h.eventPublisher.PayedForFinishedTask(ctx, PayedForFinishedTask{
+		UserUID: t.AssignedToUserUID(),
+		TaskUID: cmd.TaskUID,
+		Amount:  t.PriceAssigned(),
+	})
+
 	return nil
 }

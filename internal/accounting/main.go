@@ -39,7 +39,7 @@ func run(logger *zap.SugaredLogger) error {
 		return err
 	}
 
-	app, err := service.NewApplication(publisher)
+	app, err := service.NewApplication(publisher, logger)
 	if err != nil {
 		return err
 	}

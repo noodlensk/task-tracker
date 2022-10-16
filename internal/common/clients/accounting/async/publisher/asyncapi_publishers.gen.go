@@ -75,3 +75,21 @@ func (c PublisherClient) TaskEstimated(ctx context.Context, e TaskEstimated) err
 
 	return c.publisher.Publish("accounting.task_estimated", message.NewMessage(watermill.NewShortUUID(), data))
 }
+
+func (c PublisherClient) UserCharged(ctx context.Context, e UserCharged) error {
+	data, err := json.Marshal(e)
+	if err != nil {
+		return errors.Wrap(err, "marshal data")
+	}
+
+	return c.publisher.Publish("accounting.user_charged", message.NewMessage(watermill.NewShortUUID(), data))
+}
+
+func (c PublisherClient) UserPayed(ctx context.Context, e UserPayed) error {
+	data, err := json.Marshal(e)
+	if err != nil {
+		return errors.Wrap(err, "marshal data")
+	}
+
+	return c.publisher.Publish("accounting.user_payed", message.NewMessage(watermill.NewShortUUID(), data))
+}
