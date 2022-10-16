@@ -2,12 +2,11 @@ package service
 
 import (
 	"context"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
 	"log"
 	"os"
 	"testing"
-
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/require"
 
 	"github.com/noodlensk/task-tracker/internal/accounting/adapters"
 	"github.com/noodlensk/task-tracker/internal/accounting/data/subscriber"
@@ -36,17 +35,16 @@ func TestEstimateTask(t *testing.T) {
 	cudPublisher.CreateUser(t, userToCreate)
 
 	taskToCreate := accountingCUDClient.TaskCreated{
-		Id:          uuid.New().String(),
-		Title:       "myTitle",
-		Description: "",
-		AssignedTo:  userToCreate.Id,
+		Id:         uuid.New().String(),
+		Title:      "myTitle",
+		AssignedTo: userToCreate.Id,
 	}
 
 	cudPublisher.CreateTask(t, taskToCreate)
 
 	asyncPublisher.TaskCreated(t, accountingAsyncPublisherClient.TaskCreated{PublicId: taskToCreate.Id})
 
-	estimatedTask, err := asyncSubscriber.WaitForTaskEstimated(ctx)
+	estimatedTask, err := asyncSubscriber.WaitForTaskEstimated(ctx, taskToCreate.Id)
 	require.NoError(t, err)
 
 	require.True(t, float32(10) <= estimatedTask.AssignedPrice && float32(20) >= estimatedTask.AssignedPrice)
@@ -150,6 +148,8 @@ func startService() error {
 			panic(err)
 		}
 	}()
+
+	asyncServer.Running()
 
 	return nil
 }

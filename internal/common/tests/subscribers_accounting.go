@@ -33,12 +33,16 @@ func (a AccountingAsyncSubscriber) TaskEstimated(ctx context.Context, e subscrib
 	return nil
 }
 
-func (a AccountingAsyncSubscriber) WaitForTaskEstimated(ctx context.Context) (*subscriber.TaskEstimated, error) {
+func (a AccountingAsyncSubscriber) WaitForTaskEstimated(ctx context.Context, taskUID string) (*subscriber.TaskEstimated, error) {
 	for {
 		select {
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		case e := <-a.taskEstimatedCh:
+			if e.Id != taskUID {
+				continue
+			}
+
 			return &e, nil
 		}
 	}

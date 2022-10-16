@@ -105,7 +105,9 @@ func startService() error {
 		return tasksHTTPServer.HandlerFromMux(tasksHTTPServer.NewHTTPServer(app), router)
 	})
 
-	go asyncServer.Start(ctx) // TODO: wait for start
+	go asyncServer.Start(ctx)
+
+	asyncServer.Running()
 
 	ok := tests.WaitForPort(httpAddr)
 	if !ok {

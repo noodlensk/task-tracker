@@ -22,7 +22,7 @@ type Server struct {
 }
 
 func (s Server) TaskCreated(ctx context.Context, e TaskCreated) error {
-	t := task.NewTaskFromCUD(e.Id, e.Title, e.Title, e.AssignedTo)
+	t := task.NewTaskFromCUD(e.Id, e.Title, e.AssignedTo, e.AssignedTo)
 
 	if err := s.tasksRepo.Create(ctx, &t); err != nil {
 		return err
@@ -32,7 +32,7 @@ func (s Server) TaskCreated(ctx context.Context, e TaskCreated) error {
 }
 
 func (s Server) TaskUpdated(ctx context.Context, e TaskUpdated) error {
-	t := task.NewTaskFromCUD(e.Id, e.Title, e.Title, e.AssignedTo)
+	t := task.NewTaskFromCUD(e.Id, e.Title, e.AssignedTo, e.AssignedTo)
 
 	if err := s.tasksRepo.Update(ctx, t.UID(), func(ctx context.Context, t *task.Task) (*task.Task, error) {
 		t.SetTitle(e.Title)
