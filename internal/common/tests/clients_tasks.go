@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	tasksAsyncClient "github.com/noodlensk/task-tracker/internal/common/clients/tasks/async"
+	"github.com/noodlensk/task-tracker/internal/common/clients/tasks/cud/publisher"
 	tasksHTTPClient "github.com/noodlensk/task-tracker/internal/common/clients/tasks/http"
 )
 
@@ -60,22 +60,22 @@ func (c TasksHTTPClient) GetAllTasks(t *testing.T) []tasksHTTPClient.Task {
 	return rp.Tasks
 }
 
-type TasksAsyncClient struct {
-	client *tasksAsyncClient.PublisherClient
+type TasksCUDClient struct {
+	client *publisher.PublisherClient
 }
 
-func NewTasksAsyncClient(t *testing.T) TasksAsyncClient {
+func NewTasksCUDClient(t *testing.T) TasksCUDClient {
 	t.Helper()
 
 	pub, err := NewAsyncPublisher()
 	require.NoError(t, err)
 
-	return TasksAsyncClient{
-		client: tasksAsyncClient.NewPublisherClient(pub),
+	return TasksCUDClient{
+		client: publisher.NewPublisherClient(pub),
 	}
 }
 
-func (c TasksAsyncClient) UserCreated(t *testing.T, u tasksAsyncClient.UserCreated) {
+func (c TasksCUDClient) CreateUser(t *testing.T, u publisher.UserCreated) {
 	t.Helper()
 
 	ctx := context.Background()

@@ -24,6 +24,9 @@ function Msg(message) {
             case 'integer':
                 goType = "int"
                 break
+            case 'number':
+                goType = "float32"
+                break
             case 'object':
                 switch (schema.additionalProperties().type()) {
                     default:

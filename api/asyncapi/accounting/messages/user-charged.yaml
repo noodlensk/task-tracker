@@ -1,0 +1,10 @@
+name: UserCharged
+payload:
+  type: object
+  properties:
+    user_uid:
+      type: string
+    amount:
+      type: number
+    reason:
+      type: string

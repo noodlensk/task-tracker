@@ -14,7 +14,6 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-
 	// (GET /tasks)
 	GetTasks(w http.ResponseWriter, r *http.Request, params GetTasksParams)
 
@@ -50,7 +49,6 @@ func (siw *ServerInterfaceWrapper) GetTasks(w http.ResponseWriter, r *http.Reque
 
 	// ------------- Required query parameter "offset" -------------
 	if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
-
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "offset"})
 		return
@@ -64,7 +62,6 @@ func (siw *ServerInterfaceWrapper) GetTasks(w http.ResponseWriter, r *http.Reque
 
 	// ------------- Required query parameter "limit" -------------
 	if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
-
 	} else {
 		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
 		return
@@ -76,7 +73,7 @@ func (siw *ServerInterfaceWrapper) GetTasks(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	var handler = func(w http.ResponseWriter, r *http.Request) {
+	handler := func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetTasks(w, r, params)
 	}
 
@@ -93,7 +90,7 @@ func (siw *ServerInterfaceWrapper) CreateTask(w http.ResponseWriter, r *http.Req
 
 	ctx = context.WithValue(ctx, BearerAuthScopes, []string{""})
 
-	var handler = func(w http.ResponseWriter, r *http.Request) {
+	handler := func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateTask(w, r)
 	}
 
@@ -110,7 +107,7 @@ func (siw *ServerInterfaceWrapper) MarkTaskAsComplete(w http.ResponseWriter, r *
 
 	ctx = context.WithValue(ctx, BearerAuthScopes, []string{""})
 
-	var handler = func(w http.ResponseWriter, r *http.Request) {
+	handler := func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.MarkTaskAsComplete(w, r)
 	}
 
@@ -127,7 +124,7 @@ func (siw *ServerInterfaceWrapper) ReassignTasks(w http.ResponseWriter, r *http.
 
 	ctx = context.WithValue(ctx, BearerAuthScopes, []string{""})
 
-	var handler = func(w http.ResponseWriter, r *http.Request) {
+	handler := func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ReassignTasks(w, r)
 	}
 

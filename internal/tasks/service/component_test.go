@@ -13,10 +13,13 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
-	tasksAsyncClient "github.com/noodlensk/task-tracker/internal/common/clients/tasks/async"
+	tasksCUDClient "github.com/noodlensk/task-tracker/internal/common/clients/tasks/cud/publisher"
 	tasksHTTPClient "github.com/noodlensk/task-tracker/internal/common/clients/tasks/http"
 	"github.com/noodlensk/task-tracker/internal/common/server"
 	"github.com/noodlensk/task-tracker/internal/common/tests"
+	"github.com/noodlensk/task-tracker/internal/tasks/adapters"
+	"github.com/noodlensk/task-tracker/internal/tasks/data/publisher"
+	"github.com/noodlensk/task-tracker/internal/tasks/data/subscriber"
 	tasksAsyncServer "github.com/noodlensk/task-tracker/internal/tasks/ports/async"
 	tasksHTTPServer "github.com/noodlensk/task-tracker/internal/tasks/ports/http"
 )
@@ -27,16 +30,16 @@ func TestCreateTask(t *testing.T) {
 	token := tests.FakeAdminJWT(t, uuid.New().String())
 	httpClient := tests.NewTasksHTTPClient(t, token)
 
-	asyncClient := tests.NewTasksAsyncClient(t)
+	asyncClient := tests.NewTasksCUDClient(t)
 
-	userToCreate := tasksAsyncClient.UserCreated{
+	userToCreate := tasksCUDClient.UserCreated{
 		Id:    "myUID",
 		Name:  "Dmitry",
 		Email: "some@email.com",
 		Role:  "basic",
 	}
 
-	asyncClient.UserCreated(t, userToCreate)
+	asyncClient.CreateUser(t, userToCreate)
 
 	time.Sleep(time.Second * 1) // TODO: replace it with more stable solution
 
@@ -51,7 +54,7 @@ func TestCreateTask(t *testing.T) {
 	var taskCreated *tasksHTTPClient.Task
 
 	for _, task := range taskList {
-		if task.Title == taskToCreate.Title { //TODO: return UID of created task
+		if task.Title == taskToCreate.Title { // TODO: return UID of created task
 			taskCreated = &task
 
 			break
@@ -69,7 +72,18 @@ func TestCreateTask(t *testing.T) {
 }
 
 func startService() error {
-	app := NewComponentTestApplication()
+	asyncPub, err := tests.NewAsyncPublisher()
+	if err != nil {
+		panic(err)
+	}
+
+	pub := publisher.NewPublisherClient(asyncPub)
+
+	taskRepo := adapters.NewTaskInMemoryRepository(pub)
+
+	userRepo := adapters.NewUserInMemoryRepository()
+
+	app := NewComponentTestApplication(userRepo, taskRepo)
 	ctx := context.Background()
 
 	httpAddr := "127.0.0.1:8080"
@@ -83,11 +97,17 @@ func startService() error {
 		return err
 	}
 
+	if err := subscriber.Register(subscriber.NewAsyncServer(userRepo), asyncServer.Router, asyncServer.Subscriber); err != nil {
+		return err
+	}
+
 	go server.RunHTTPServerOnAddr(ctx, httpAddr, tests.NewLogger(), func(router chi.Router) http.Handler {
 		return tasksHTTPServer.HandlerFromMux(tasksHTTPServer.NewHTTPServer(app), router)
 	})
 
-	go asyncServer.Start(ctx) // TODO: wait for start
+	go asyncServer.Start(ctx)
+
+	asyncServer.Running()
 
 	ok := tests.WaitForPort(httpAddr)
 	if !ok {

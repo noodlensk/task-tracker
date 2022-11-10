@@ -34,3 +34,8 @@ func (s WatermillServer) Start(ctx context.Context) error {
 
 	return s.Router.Run(ctx)
 }
+
+// Running is waiting until server is fully running
+func (s WatermillServer) Running() {
+	<-s.Router.Running()
+}

@@ -1,0 +1,6 @@
+name: ReAssignTasks
+payload:
+  type: object
+  properties:
+    triggered_by_user:
+      type: string

@@ -13,13 +13,13 @@ func NewAsyncSubscriber() (*server.WatermillServer, error) {
 			Brokers:     []string{"localhost:9092"},
 			Unmarshaler: kafka.DefaultMarshaler{},
 		},
-		logs.NewWatermillNopLogger(),
+		logs.NewWatermillLogger(logs.NewLogger()),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	srv, err := server.NewWatermillServer(sub, logs.NewNopLogger())
+	srv, err := server.NewWatermillServer(sub, logs.NewLogger())
 	if err != nil {
 		return nil, err
 	}
@@ -33,6 +33,6 @@ func NewAsyncPublisher() (*kafka.Publisher, error) {
 			Brokers:   []string{"localhost:9092"},
 			Marshaler: kafka.DefaultMarshaler{},
 		},
-		logs.NewWatermillNopLogger(),
+		logs.NewWatermillLogger(logs.NewLogger()),
 	)
 }

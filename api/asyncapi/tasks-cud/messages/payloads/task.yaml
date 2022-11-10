@@ -1,0 +1,21 @@
+type: object
+properties:
+  id:
+    type: string
+  title:
+    type: string
+  description:
+    type: string
+  assigned_to:
+    type: string
+  created_by:
+    type: string
+  status:
+    type: string
+    enum: ["NEW", "DONE"]
+  created_at:
+    type: string
+    format: date-time
+  modified_at:
+    type: string
+    format: date-time

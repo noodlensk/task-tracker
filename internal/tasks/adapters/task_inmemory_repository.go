@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/noodlensk/task-tracker/internal/tasks/data/publisher"
 	"github.com/noodlensk/task-tracker/internal/tasks/domain/task"
 	"github.com/noodlensk/task-tracker/internal/tasks/domain/user"
 )
@@ -13,12 +14,15 @@ import (
 type TaskInMemoryRepository struct {
 	tasks map[string]*task.Task
 
+	publisher *publisher.PublisherClient
+
 	lock sync.RWMutex
 }
 
-func NewTaskInMemoryRepository() *TaskInMemoryRepository {
+func NewTaskInMemoryRepository(pub *publisher.PublisherClient) *TaskInMemoryRepository {
 	return &TaskInMemoryRepository{
-		tasks: map[string]*task.Task{},
+		tasks:     map[string]*task.Task{},
+		publisher: pub,
 	}
 }
 
@@ -31,6 +35,17 @@ func (r *TaskInMemoryRepository) AddTask(ctx context.Context, t *task.Task) erro
 	}
 
 	r.tasks[t.UID()] = t
+
+	if err := r.publisher.TaskCreated(ctx, publisher.TaskCreated{
+		Id:          t.UID(),
+		Title:       t.Title(),
+		Description: t.Description(),
+		AssignedTo:  t.AssignedTo().UID,
+		CreatedBy:   t.CreatedBy().UID,
+		Status:      string(t.Status()),
+	}); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -97,6 +112,17 @@ func (r *TaskInMemoryRepository) UpdateTask(ctx context.Context, taskUUID string
 	}
 
 	r.tasks[taskUUID] = newVal
+
+	if err := r.publisher.TaskUpdated(ctx, publisher.TaskUpdated{
+		Id:          newVal.UID(),
+		Title:       newVal.Title(),
+		Description: newVal.Description(),
+		AssignedTo:  newVal.AssignedTo().UID,
+		CreatedBy:   newVal.CreatedBy().UID,
+		Status:      string(newVal.Status()),
+	}); err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -1,0 +1,19 @@
+asyncapi: 2.4.0
+info:
+  title: Analytics CUD
+  version: 1.0.0
+  description: TODO
+defaultContentType: application/json
+channels:
+  users-cud.created:
+    subscribe:
+      message:
+        $ref: '../users-cud/messages/user-created.yaml'
+  users-cud.updated:
+    subscribe:
+      message:
+        $ref: '../users-cud/messages/user-updated.yaml'
+  accounting-cud.transaction.created:
+    subscribe:
+      message:
+        $ref: '../accounting-cud/messages/transaction-created.yaml'

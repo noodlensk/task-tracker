@@ -128,6 +128,7 @@ func (h Server) ReassignTasks(w http.ResponseWriter, r *http.Request) {
 
 	if u.Role != "admin" && u.Role != "manager" {
 		httperr.Unauthorized("invalid-role", nil, w, r)
+
 		return
 	}
 

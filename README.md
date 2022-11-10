@@ -13,3 +13,9 @@ A repo for home task for the course https://education.borshev.com/architecture.
 ### Week 1
 
 - Added [ES and DataModel](./docs/arch.md)
+
+## Refs
+
+- https://threedots.tech/post/when-sql-database-makes-great-pub-sub/
+- http://www.kamilgrzybek.com/design/how-to-publish-and-handle-domain-events/
+- https://levelup.gitconnected.com/practical-ddd-in-golang-aggregate-de13f561e629

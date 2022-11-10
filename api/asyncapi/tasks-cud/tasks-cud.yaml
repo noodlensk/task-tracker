@@ -1,0 +1,22 @@
+asyncapi: 2.4.0
+info:
+  title: Tasks CUD
+  version: 1.0.0
+  description: TODO
+channels:
+  tasks-cud.created:
+    publish:
+      message:
+        $ref: 'messages/task-created.yaml'
+  tasks-cud.updated:
+    publish:
+      message:
+        $ref: 'messages/task-updated.yaml'
+  users-cud.created:
+    subscribe:
+      message:
+        $ref: '../users-cud/messages/user-created.yaml'
+  users-cud.updated:
+    subscribe:
+      message:
+        $ref: '../users-cud/messages/user-updated.yaml'
